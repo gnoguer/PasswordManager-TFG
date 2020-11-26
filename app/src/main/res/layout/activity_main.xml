@@ -12,13 +12,17 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="95dp"
         android:layout_marginLeft="95dp"
+        android:layout_marginTop="80dp"
         android:layout_marginEnd="95dp"
         android:layout_marginRight="95dp"
         android:layout_marginBottom="80dp"
         android:text="Log in"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextMasterPassword"
+        app:layout_constraintVertical_bias="0.632" />
 
     <EditText
         android:id="@+id/editTextEmail"
@@ -59,7 +63,7 @@
         android:id="@+id/imageView2"
         android:layout_width="0dp"
         android:layout_height="150dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="52dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

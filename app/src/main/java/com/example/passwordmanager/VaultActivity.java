@@ -13,6 +13,8 @@ public class VaultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vault);
+        setTitle("Vault");
+
 
         CardView passwordsCardView = findViewById(R.id.passwordsCardView);
 

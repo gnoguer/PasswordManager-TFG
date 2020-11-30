@@ -49,14 +49,15 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="200dp"
             android:layout_marginRight="200dp"
-            app:cardElevation="8dp"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_marginBottom="100dp"
             android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardElevation="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/passwordsCardView"
-            android:focusable="true">
+            app:layout_constraintTop_toBottomOf="@+id/passwordsCardView">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -103,15 +104,15 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="300dp"
-            app:cardElevation="8dp"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_marginBottom="350dp"
             android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardElevation="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view2"
-            android:focusable="true">
+            app:layout_constraintTop_toBottomOf="@+id/view2">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -159,14 +160,15 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            app:cardElevation="8dp"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_marginBottom="100dp"
             android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardElevation="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/notesCardView"
-            android:focusable="true">
+            app:layout_constraintTop_toBottomOf="@+id/notesCardView">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -214,15 +216,15 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="200dp"
             android:layout_marginRight="200dp"
-            android:layout_marginBottom="300dp"
-            app:cardElevation="8dp"
-            android:foreground="?android:attr/selectableItemBackground"
+            android:layout_marginBottom="350dp"
             android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardElevation="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view2"
-            android:focusable="true">
+            app:layout_constraintTop_toBottomOf="@+id/view2">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

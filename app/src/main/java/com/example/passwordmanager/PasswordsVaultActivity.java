@@ -14,7 +14,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passwords_vault);
-
+        setTitle("Passwords Vault");
         FloatingActionButton fab = findViewById(R.id.passwordsFab);
 
         fab.setOnClickListener(new View.OnClickListener(){

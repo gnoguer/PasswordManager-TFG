@@ -14,7 +14,7 @@ public class AddPasswordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_password);
-
+        setTitle("Add password");
         EditText serviceName = findViewById(R.id.editTextServiceName);
         EditText username = findViewById(R.id.editTextUsername);
         EditText password = findViewById(R.id.editTextPassword);

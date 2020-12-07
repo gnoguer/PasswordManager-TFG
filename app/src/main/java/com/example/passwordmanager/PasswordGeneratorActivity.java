@@ -2,6 +2,8 @@ package com.example.passwordmanager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 public class PasswordGeneratorActivity extends AppCompatActivity {
 
     private int passLength = 8;
+    private String newGeneratedPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +27,11 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
         TextView generatedPass = findViewById(R.id.generatedPassTextView);
         SeekBar seekBar = findViewById(R.id.lengthSeekBar);
         TextView lengthNum = findViewById(R.id.lengthNumberTextView);
+        Button savePassBtn = findViewById(R.id.saveGeneratedPassButton);
 
         PasswordGenerator generator = new PasswordGenerator();
-        generatedPass.setText(generator.generateStrongPassword(passLength));
+        newGeneratedPass = generator.generateStrongPassword(passLength);
+        generatedPass.setText(newGeneratedPass);
 
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -50,11 +55,21 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
         generateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                generatedPass.setText(generator.generateStrongPassword(passLength));
+                newGeneratedPass = generator.generateStrongPassword(passLength);
+                generatedPass.setText(newGeneratedPass);
             }
         });
 
 
+        savePassBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("result",newGeneratedPass);
+                setResult(Activity.RESULT_OK,returnIntent);
+                finish();
+            }
+        });
 
     }
 }

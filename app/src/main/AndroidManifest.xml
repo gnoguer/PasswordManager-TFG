@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PasswordManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PasswordGeneratorActivity"></activity>
+        <activity android:name=".SignupActivity"></activity>
+        <activity android:name=".PasswordGeneratorActivity" />
         <activity android:name=".AddPasswordActivity" />
         <activity android:name=".PasswordsVaultActivity" />
         <activity android:name=".VaultActivity" />
@@ -24,7 +25,5 @@
             </intent-filter>
         </activity>
     </application>
-
-
 
 </manifest>

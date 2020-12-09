@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -22,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     Button logInButton;
     EditText editTextEmail;
     EditText editTextMasterPassword;
+    TextView textViewCreateAccount;
 
     String email;
     String password;
@@ -43,22 +46,27 @@ public class LoginActivity extends AppCompatActivity {
         logInButton = findViewById(R.id.loginButton);
         editTextEmail = findViewById(R.id.editTextEmail);
         editTextMasterPassword = findViewById(R.id.editTextMasterPassword);
-
+        textViewCreateAccount = findViewById(R.id.textViewCreateAccount);
 
 
        logInButton.setOnClickListener(new View.OnClickListener(){
            public void onClick(View view){
-               email = String.valueOf(editTextMasterPassword.getText());
-               password = String.valueOf(editTextMasterPassword.getText());
                login();
-
            }
        });
+
+       textViewCreateAccount.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               startActivity(new Intent(getApplicationContext(), SignupActivity.class));
+           }
+       });
+
+
     }
 
     public void login(){
 
-        //first getting the values
         final String email = editTextEmail.getText().toString();
         final String password = editTextMasterPassword.getText().toString();
 
@@ -100,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                                 //storing the user in shared preferences
                                 SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
 
-                                //starting the profile activity
+                                //starting the activity
                                 finish();
 
                                 startActivity(new Intent(getApplicationContext(), VaultActivity.class));
@@ -129,10 +137,6 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
-    }
-
-    public void register(){
-
     }
 
 }

@@ -1,8 +1,10 @@
 package com.example.passwordmanager;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -25,8 +27,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -86,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         //if everything is fine
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_LOGIN,
                 new Response.Listener<String>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onResponse(String response) {
                         try {
@@ -96,15 +114,27 @@ public class LoginActivity extends AppCompatActivity {
                             if (!obj.getBoolean("error")) {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
 
+                                byte[] salt = {
+                                        (byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c,
+                                        (byte)0x7e, (byte)0xc8, (byte)0xee, (byte)0x99
+                                };
+
+                                PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 1000, 128 * 8);
+                                SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
+
+                                //Converting the secret to string
+                                String secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+
                                 //getting the user from the response
                                 JSONObject userJson = obj.getJSONObject("user");
 
                                 //creating a new user object
                                 User user = new User(
                                         userJson.getInt("id"),
-                                        userJson.getString("email")
+                                        userJson.getString("email"),
+                                        secretKeyString
                                 );
-
+                                Log.d("user",secretKeyString);
                                 //storing the user in shared preferences
                                 SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
 
@@ -116,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
                             }
-                        } catch (JSONException e) {
+                        } catch (JSONException | GeneralSecurityException | IOException e) {
                             e.printStackTrace();
                         }
                     }

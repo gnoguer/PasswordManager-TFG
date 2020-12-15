@@ -1,6 +1,7 @@
 package com.example.passwordmanager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -8,9 +9,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +21,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.Base64;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class AddPasswordActivity extends AppCompatActivity {
 
@@ -64,10 +72,16 @@ public class AddPasswordActivity extends AppCompatActivity {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
             startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
+            User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
+
+            byte[] decodedKey = Base64.getDecoder().decode(user.getSecret());
+            SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+            Log.d("user",user.getSecret());
         }
         return super.onOptionsItemSelected(item);
     }

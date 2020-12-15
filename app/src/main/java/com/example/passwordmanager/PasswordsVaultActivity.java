@@ -1,6 +1,7 @@
 package com.example.passwordmanager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_passwords_vault);
         setTitle("Passwords Vault");
         FloatingActionButton fab = findViewById(R.id.passwordsFab);
+        Toolbar toolbar = findViewById(R.id.passVaultToolbar);
+        setSupportActionBar(toolbar);
 
         fab.setOnClickListener(new View.OnClickListener(){
 

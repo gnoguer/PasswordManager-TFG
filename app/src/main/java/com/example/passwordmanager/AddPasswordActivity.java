@@ -1,13 +1,19 @@
 package com.example.passwordmanager;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +36,9 @@ public class AddPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_password);
         setTitle("Add password");
 
+        Toolbar toolbar = findViewById(R.id.addToolbar);
+        setSupportActionBar(toolbar);
+
         serviceName = findViewById(R.id.editTextServiceName);
         username = findViewById(R.id.editTextUsername);
         password = findViewById(R.id.editTextPassword);
@@ -46,6 +55,21 @@ public class AddPasswordActivity extends AppCompatActivity {
                 startActivityForResult(intent, LAUNCH_SECOND_ACTIVITY);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.addItem) {
+            startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

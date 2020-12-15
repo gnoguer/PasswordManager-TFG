@@ -1,6 +1,7 @@
 package com.example.passwordmanager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
@@ -15,6 +16,8 @@ public class VaultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vault);
         setTitle("Vault");
 
+        Toolbar toolbar = findViewById(R.id.vaultToolbar);
+        setSupportActionBar(toolbar);
 
         CardView passwordsCardView = findViewById(R.id.passwordsCardView);
 

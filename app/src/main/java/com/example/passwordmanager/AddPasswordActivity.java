@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,10 +21,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.Base64;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 public class AddPasswordActivity extends AppCompatActivity {
 
@@ -72,20 +69,39 @@ public class AddPasswordActivity extends AppCompatActivity {
         return true;
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
-            startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
-            User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
+            //startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
 
-            byte[] decodedKey = Base64.getDecoder().decode(user.getSecret());
-            SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-            Log.d("user",user.getSecret());
+            try {
+                savePassword();
+            } catch (GeneralSecurityException | IOException e) {
+                e.printStackTrace();
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void savePassword() throws GeneralSecurityException, IOException {
+
+        String strPass = password.getText().toString();
+        Log.d("user", strPass);
+
+        User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
+        Log.d("user",user.getSecret());
+
+        Crypter crypter = new Crypter();
+        String strEncryptedPass = crypter.encrypt(strPass,user.getSecret());
+
+
+        
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

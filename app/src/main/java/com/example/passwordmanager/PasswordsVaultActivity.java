@@ -9,6 +9,8 @@ import android.view.View;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+
 public class PasswordsVaultActivity extends AppCompatActivity {
 
     @Override
@@ -16,9 +18,14 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passwords_vault);
         setTitle("Passwords Vault");
+
         FloatingActionButton fab = findViewById(R.id.passwordsFab);
         Toolbar toolbar = findViewById(R.id.passVaultToolbar);
+
         setSupportActionBar(toolbar);
+
+        ArrayList<Service> services = new ArrayList<>();
+
 
         fab.setOnClickListener(new View.OnClickListener(){
 

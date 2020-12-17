@@ -22,6 +22,7 @@ public class SharedPrefManager {
     private static SharedPrefManager mInstance;
     private static Context mCtx;
 
+
     private SharedPrefManager(Context context) {
         mCtx = context;
     }
@@ -33,10 +34,11 @@ public class SharedPrefManager {
         return mInstance;
     }
 
+
     //method to let the user login
     //this method will store the user data in shared preferences
     public void userLogin(User user) throws GeneralSecurityException, IOException {
-        String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+        String masterKeyAlias = masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
 
         //SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
@@ -61,8 +63,18 @@ public class SharedPrefManager {
     }
 
     //this method will give the logged in user
-    public User getUser() {
-        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+    public User getUser() throws GeneralSecurityException, IOException {
+
+        String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+
+        //SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
+                SHARED_PREF_NAME,
+                masterKeyAlias,
+                mCtx,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
         return new User(
                 sharedPreferences.getInt(KEY_ID, -1),
                 sharedPreferences.getString(KEY_EMAIL, null),

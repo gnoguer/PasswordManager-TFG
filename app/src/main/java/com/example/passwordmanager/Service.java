@@ -7,6 +7,13 @@ public class Service {
     private String password;
     private String note;
 
+    public Service(String name, String username, String password, String note){
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.note = note;
+    }
+
     public String getName() {
         return name;
     }
@@ -38,8 +45,6 @@ public class Service {
     public void setNote(String note) {
         this.note = note;
     }
-
-
 
 
 }

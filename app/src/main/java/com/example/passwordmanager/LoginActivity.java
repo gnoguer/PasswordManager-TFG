@@ -114,19 +114,23 @@ public class LoginActivity extends AppCompatActivity {
                             if (!obj.getBoolean("error")) {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
 
-                                byte[] salt = {
-                                        (byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c,
-                                        (byte)0x7e, (byte)0xc8, (byte)0xee, (byte)0x99
+                                //getting the user from the response
+                                JSONObject userJson = obj.getJSONObject("user");
+
+                                byte[] a = userJson.getString("email").getBytes();
+                                byte[] b = {
+                                        (byte)userJson.getInt("id"),
                                 };
 
-                                PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 1000, 128 * 8);
+                                byte[] salt = new byte[a.length + b.length];
+                                System.arraycopy(b,0,salt,0,b.length);
+                                System.arraycopy(a,0,salt,b.length,a.length);
+
+                                PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 1000, 256);
                                 SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
 
                                 //Converting the secret to string
                                 String secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
-
-                                //getting the user from the response
-                                JSONObject userJson = obj.getJSONObject("user");
 
                                 //creating a new user object
                                 User user = new User(
@@ -134,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                                         userJson.getString("email"),
                                         secretKeyString
                                 );
+
                                 Log.d("user",secretKeyString);
                                 //storing the user in shared preferences
                                 SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);

@@ -3,11 +3,12 @@ package com.example.passwordmanager;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -25,18 +26,17 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 public class PasswordsVaultActivity extends AppCompatActivity {
 
-    private ArrayList<Service> services = new ArrayList<>();
+    private final ArrayList<Service> services = new ArrayList<>();
+
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +49,12 @@ public class PasswordsVaultActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-
-
         try {
             getItems();
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
         }
+
 
         fab.setOnClickListener(new View.OnClickListener(){
 
@@ -64,6 +63,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
     public void getItems() throws GeneralSecurityException, IOException {
@@ -81,13 +81,9 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                             //if no error in response
                             if (!obj.getBoolean("error")) {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-
-                                //getting the user from the response
-
                                 JSONArray passwordsArray = obj.getJSONArray("passwords");
 
                                 for (int i = 0; i < passwordsArray.length(); i++){
-
                                     JSONObject passwordJson = passwordsArray.getJSONObject(i);
 
                                     String name = passwordJson.getString("name");
@@ -98,10 +94,11 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                                     services.add(new Service(name, username, password, note));
                                 }
 
-                                //starting the activity
-                                finish();
-
-                                startActivity(new Intent(getApplicationContext(), VaultActivity.class));
+                                recyclerView = findViewById(R.id.passwordsRecyclerView);
+                                layoutManager = new LinearLayoutManager(getApplicationContext());
+                                adapter = new PasswordsVaultAdapter(services);
+                                recyclerView.setLayoutManager(layoutManager);
+                                recyclerView.setAdapter(adapter);
 
                             } else {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
@@ -124,7 +121,6 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                 return params;
             }
         };
-
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 }

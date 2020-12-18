@@ -77,21 +77,7 @@ public class SignupActivity extends AppCompatActivity {
                             if (!obj.getBoolean("error")) {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
 
-//                                getting the user from the response
-//                                JSONObject userJson = obj.getJSONObject("user");
-
-//                                creating a new user object
-//                                User user = new User(
-//                                        userJson.getInt("id"),
-//                                        userJson.getString("email")
-//                                );
-
-//                                storing the user in shared preferences
-//                                SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
-
-                                //starting the activity
                                 finish();
-
                                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
 
                             } else {

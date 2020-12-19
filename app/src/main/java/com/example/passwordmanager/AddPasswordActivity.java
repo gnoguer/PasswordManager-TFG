@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -86,72 +87,102 @@ public class AddPasswordActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
-            //startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
-
             try {
                 savePassword();
             } catch (GeneralSecurityException | IOException e) {
                 e.printStackTrace();
             }
-
         }
         return super.onOptionsItemSelected(item);
     }
 
+    public boolean validInputs(){
+
+        final String strServiceName = serviceName.getText().toString();
+        final String strUserName = username.getText().toString();
+        final String strPassword = password.getText().toString();
+        final String strNote = note.getText().toString();
+
+        if (TextUtils.isEmpty(strServiceName)) {
+            serviceName.setError("Please enter your service name");
+            serviceName.requestFocus();
+            return false;
+        }
+
+//        if (TextUtils.isEmpty(strUserName)) {
+//            username.setError("Please enter your username");
+//            username.requestFocus();
+//            return false;
+//        }
+
+        if (TextUtils.isEmpty(strPassword)) {
+            password.setError("Please enter your password");
+            password.requestFocus();
+            return false;
+        }
+
+//        if (TextUtils.isEmpty(strNote)) {
+//            note.setError("Please enter your password");
+//            note.requestFocus();
+//            return false;
+//        }
+
+        return true;
+    }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void savePassword() throws GeneralSecurityException, IOException {
 
-        String strPass = password.getText().toString();
-        Log.d("user", strPass);
+        if(validInputs()){
 
-        User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
-        Log.d("user",user.getSecret());
+            String strPass = password.getText().toString();
+            Log.d("user", strPass);
 
-        //Encryption of the password
-        Crypter crypter = new Crypter();
-        String strEncryptedPass = crypter.encrypt(strPass,user.getSecret());
+            User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
+            Log.d("user",user.getSecret());
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_SAVE_PASSWORD,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            //converting response to json object
-                            JSONObject obj = new JSONObject(response);
-                            //if no error in response
-                            if (!obj.getBoolean("error")) {
-                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-                                finish();
+            //Encryption of the password
+            Crypter crypter = new Crypter();
+            String strEncryptedPass = crypter.encrypt(strPass,user.getSecret());
 
-                                startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
-
-                            } else {
-                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_SAVE_PASSWORD,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                //converting response to json object
+                                JSONObject obj = new JSONObject(response);
+                                //if no error in response
+                                if (!obj.getBoolean("error")) {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                    finish();
+                                    startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
+                                } else {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("userId", String.valueOf(user.getId()));
-                params.put("name", String.valueOf(serviceName.getText()));
-                params.put("password", strEncryptedPass);
-                params.put("note", String.valueOf(note.getText()));
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("userId", String.valueOf(user.getId()));
+                    params.put("name", String.valueOf(serviceName.getText()));
+                    params.put("password", strEncryptedPass);
+                    params.put("note", String.valueOf(note.getText()));
 
-                return params;
-            }
-        };
-        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
-
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+        }
     }
 
     @Override
@@ -194,4 +225,9 @@ public class AddPasswordActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
+    }
 }

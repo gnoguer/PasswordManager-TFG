@@ -6,10 +6,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -34,7 +37,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
     private final ArrayList<Service> services = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    private PasswordsVaultAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
 
@@ -59,6 +62,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener(){
 
             public void onClick(View view){
+                finish();
                 Intent intent = new Intent(PasswordsVaultActivity.this, AddPasswordActivity.class);
                 startActivity(intent);
             }
@@ -81,24 +85,10 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                             //if no error in response
                             if (!obj.getBoolean("error")) {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+
                                 JSONArray passwordsArray = obj.getJSONArray("passwords");
-
-                                for (int i = 0; i < passwordsArray.length(); i++){
-                                    JSONObject passwordJson = passwordsArray.getJSONObject(i);
-
-                                    String name = passwordJson.getString("name");
-                                    String username = passwordJson.getString("username");
-                                    String password = passwordJson.getString("password");
-                                    String note = passwordJson.getString("note");
-
-                                    services.add(new Service(name, username, password, note));
-                                }
-
-                                recyclerView = findViewById(R.id.passwordsRecyclerView);
-                                layoutManager = new LinearLayoutManager(getApplicationContext());
-                                adapter = new PasswordsVaultAdapter(services);
-                                recyclerView.setLayoutManager(layoutManager);
-                                recyclerView.setAdapter(adapter);
+                                createPasswordsList(passwordsArray);
+                                buildRecycleView();
 
                             } else {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
@@ -122,5 +112,46 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             }
         };
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
+    public void createPasswordsList(JSONArray passwordsArray) throws JSONException {
+        for (int i = 0; i < passwordsArray.length(); i++){
+
+            JSONObject passwordJson = passwordsArray.getJSONObject(i);
+
+            String name = passwordJson.getString("name");
+            String username = passwordJson.getString("username");
+            String password = passwordJson.getString("password");
+            String note = passwordJson.getString("note");
+
+            services.add(new Service(name, username, password, note));
+        }
+    }
+
+    public void buildRecycleView(){
+        recyclerView = findViewById(R.id.passwordsRecyclerView);
+        layoutManager = new LinearLayoutManager(getApplicationContext());
+        adapter = new PasswordsVaultAdapter(services);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(new PasswordsVaultAdapter.OnItemClickListener() {
+            @Override
+            public void onCopyClick(int position) {
+                String password = services.get(position).getPassword();
+                copyPassword(password);
+            }
+        });
+    }
+
+    public void copyPassword(String password){
+        ClipboardManager myClipboard;
+        ClipData myClip;
+
+        myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        myClip = ClipData.newPlainText("text", password);
+        myClipboard.setPrimaryClip(myClip);
+
+        Toast.makeText(getApplicationContext(), "Text Copied",Toast.LENGTH_SHORT).show();
     }
 }

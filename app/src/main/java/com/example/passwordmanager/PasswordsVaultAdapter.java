@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 
 public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAdapter.PasswordsVaultViewHolder> {
@@ -19,7 +21,7 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onCopyClick(int position);
+        void onCopyClick(int position) throws GeneralSecurityException, IOException;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -47,7 +49,11 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
                     if(listener != null){
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION){
-                           listener.onCopyClick(position);
+                            try {
+                                listener.onCopyClick(position);
+                            } catch (GeneralSecurityException | IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }

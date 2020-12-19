@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -136,10 +137,14 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new PasswordsVaultAdapter.OnItemClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
-            public void onCopyClick(int position) {
+            public void onCopyClick(int position) throws GeneralSecurityException, IOException {
                 String password = services.get(position).getPassword();
-                copyPassword(password);
+
+                String strPassword = Crypter.getInstance(getApplicationContext()).decrypt(password, SharedPrefManager.getInstance(getApplicationContext()).getSecretKey());
+                copyPassword(strPassword);
+
             }
         });
     }

@@ -1,13 +1,18 @@
 package com.example.passwordmanager;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.security.AlgorithmParameters;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -15,33 +20,76 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Crypter {
 
+    private static Crypter instance;
+    private Cipher cipher;
+    byte[] iv;
+
+    private Crypter(Context context) throws NoSuchPaddingException, NoSuchAlgorithmException {
+        cipher = Cipher.getInstance("AES");
+    }
+
+    public static synchronized Crypter getInstance(Context context) throws NoSuchAlgorithmException, NoSuchPaddingException {
+        if (instance == null) {
+            instance = new Crypter(context);
+        }
+        return instance;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String encrypt(String data, String secretKey){
-
-        String strEncryptedData = "";
+        String base64EncryptedData = "";
         //Decode de base64 string
         byte[] decodedKey = Base64.getDecoder().decode(secretKey);
         //Rebuild the key
         SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2WithHmacSHA1");
 
         try {
-            Cipher cipher = Cipher.getInstance("AES");
+
             cipher.init(Cipher.ENCRYPT_MODE, originalKey);
 
-            byte[] encryptedPass = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            strEncryptedData = Base64.getEncoder().encodeToString(encryptedPass);
+            byte[] encryptedData = cipher.doFinal(data.getBytes());
 
-            Log.d("user",strEncryptedData);
+            base64EncryptedData = Base64.getEncoder().encodeToString(encryptedData);
 
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            Log.d("user",base64EncryptedData);
+
+        } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
 
-        return strEncryptedData;
+        return base64EncryptedData;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String decrypt(String data, String secretKey){
+
+        String strDecryptedData = "";
+        //Decode de base64 string
+        byte[] decodedKey = Base64.getDecoder().decode(secretKey);
+
+        //Rebuild the key
+        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2WithHmacSHA1");
+        Log.d("key", String.valueOf(originalKey));
+
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, originalKey);
+
+            byte[] decryptedData = Base64.getDecoder().decode(data);
+            byte[] utf8 = cipher.doFinal(decryptedData);
+
+            strDecryptedData = new String(utf8, StandardCharsets.UTF_8);
+            Log.d("user", strDecryptedData);
+
+        } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+        return strDecryptedData;
+
     }
 }

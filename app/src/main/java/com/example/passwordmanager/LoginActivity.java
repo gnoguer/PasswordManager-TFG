@@ -126,6 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                                 System.arraycopy(b,0,salt,0,b.length);
                                 System.arraycopy(a,0,salt,b.length,a.length);
 
+
                                 PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 1000, 256);
                                 SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
 

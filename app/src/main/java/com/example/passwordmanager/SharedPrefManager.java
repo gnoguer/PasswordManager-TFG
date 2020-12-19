@@ -66,7 +66,6 @@ public class SharedPrefManager {
     public User getUser() throws GeneralSecurityException, IOException {
 
         String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
-
         //SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
                 SHARED_PREF_NAME,
@@ -80,6 +79,20 @@ public class SharedPrefManager {
                 sharedPreferences.getString(KEY_EMAIL, null),
                 sharedPreferences.getString(KEY_SECRET, null)
         );
+    }
+
+    public String getSecretKey() throws GeneralSecurityException, IOException {
+        String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+        //SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
+                SHARED_PREF_NAME,
+                masterKeyAlias,
+                mCtx,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
+
+        return  sharedPreferences.getString(KEY_SECRET,null);
     }
 
     //this method will logout the user

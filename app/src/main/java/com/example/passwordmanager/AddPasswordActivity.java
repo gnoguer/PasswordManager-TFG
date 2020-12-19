@@ -141,8 +141,8 @@ public class AddPasswordActivity extends AppCompatActivity {
             Log.d("user",user.getSecret());
 
             //Encryption of the password
-            Crypter crypter = new Crypter();
-            String strEncryptedPass = crypter.encrypt(strPass,user.getSecret());
+
+            String strEncryptedPass = Crypter.getInstance(getApplicationContext()).encrypt(strPass,user.getSecret());
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_SAVE_PASSWORD,
                     new Response.Listener<String>() {

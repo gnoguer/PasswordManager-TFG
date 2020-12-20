@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.Base64;
 
@@ -22,7 +23,9 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Crypter {
@@ -41,6 +44,17 @@ public class Crypter {
             instance = new Crypter(context);
         }
         return instance;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String generateKey(String masterPass, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+        PBEKeySpec spec = new PBEKeySpec(masterPass.toCharArray(), salt, 1000, 256);
+        SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
+
+        String secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+
+        return secretKeyString;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -35,12 +35,27 @@ public class SharedPrefManager {
     }
 
 
+    public void saveUserKey(String secretKey) throws GeneralSecurityException, IOException {
+        String masterKeyAlias = masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+
+        SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
+                SHARED_PREF_NAME,
+                masterKeyAlias,
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_SECRET, secretKey);
+        editor.apply();
+    }
+
     //method to let the user login
     //this method will store the user data in shared preferences
     public void userLogin(User user) throws GeneralSecurityException, IOException {
         String masterKeyAlias = masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
 
-        //SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
                 SHARED_PREF_NAME,
                 masterKeyAlias,

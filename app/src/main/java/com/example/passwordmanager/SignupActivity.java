@@ -1,8 +1,10 @@
 package com.example.passwordmanager;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,8 +21,18 @@ import com.android.volley.toolbox.StringRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -40,15 +52,21 @@ public class SignupActivity extends AppCompatActivity {
         btnCreateAccount = findViewById(R.id.buttonCreateAccount);
 
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                register();
+                try {
+                    register();
+                } catch (GeneralSecurityException | IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
 
-    protected void register(){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected void register() throws GeneralSecurityException, IOException {
 
         String email = editTextSignupEmail.getText().toString().trim();
         String masterPass = editTextSignupPassword.getText().toString().trim();
@@ -65,8 +83,16 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
+        byte[] salt = email.getBytes();
+
+        String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(masterPass,salt);
+        SharedPrefManager.getInstance(getApplicationContext()).saveUserKey(secretKeyString);
+
+        String encryptedMasterPass = Crypter.getInstance(getApplicationContext()).encrypt(masterPass);
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_REGISTER,
                 new Response.Listener<String>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onResponse(String response) {
                         try {
@@ -98,7 +124,7 @@ public class SignupActivity extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("email", email);
-                params.put("password", masterPass);
+                params.put("password", encryptedMasterPass);
                 return params;
             }
         };

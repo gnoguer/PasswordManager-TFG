@@ -67,8 +67,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
        logInButton.setOnClickListener(new View.OnClickListener(){
+           @RequiresApi(api = Build.VERSION_CODES.O)
            public void onClick(View view){
-               login();
+               try {
+                   login();
+               } catch (GeneralSecurityException | IOException e) {
+                   e.printStackTrace();
+               }
            }
        });
 
@@ -82,7 +87,8 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void login(){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void login() throws GeneralSecurityException, IOException {
 
         final String email = editTextEmail.getText().toString();
         final String password = editTextMasterPassword.getText().toString();
@@ -99,6 +105,9 @@ public class LoginActivity extends AppCompatActivity {
             editTextMasterPassword.requestFocus();
             return;
         }
+
+
+        String encryptedPassword = Crypter.getInstance(getApplicationContext()).encrypt(password);
 
         //if everything is fine
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_LOGIN,
@@ -117,21 +126,8 @@ public class LoginActivity extends AppCompatActivity {
                                 //getting the user from the response
                                 JSONObject userJson = obj.getJSONObject("user");
 
-                                byte[] a = userJson.getString("email").getBytes();
-                                byte[] b = {
-                                        (byte)userJson.getInt("id"),
-                                };
-
-                                byte[] salt = new byte[a.length + b.length];
-                                System.arraycopy(b,0,salt,0,b.length);
-                                System.arraycopy(a,0,salt,b.length,a.length);
-
-
-                                PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 1000, 256);
-                                SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
-
-                                //Converting the secret to string
-                                String secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+                                byte[] salt = userJson.getString("email").getBytes();
+                                String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(password, salt);
 
                                 //creating a new user object
                                 User user = new User(
@@ -139,14 +135,8 @@ public class LoginActivity extends AppCompatActivity {
                                         userJson.getString("email"),
                                         secretKeyString
                                 );
-
-                                Log.d("user",secretKeyString);
-                                //storing the user in shared preferences
                                 SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
-
-                                //starting the activity
                                 finish();
-
                                 startActivity(new Intent(getApplicationContext(), VaultActivity.class));
 
                             } else {
@@ -167,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("email", email);
-                params.put("password", password);
+                params.put("password", encryptedPassword);
                 return params;
             }
         };

@@ -133,15 +133,10 @@ public class AddPasswordActivity extends AppCompatActivity {
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void savePassword() throws GeneralSecurityException, IOException {
-
         if(validInputs()){
-
             String strPass = password.getText().toString();
-
             User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
-
             //Encryption of the password
-
             String strEncryptedPass = Crypter.getInstance(getApplicationContext()).encrypt(strPass);
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_SAVE_PASSWORD,
@@ -154,8 +149,11 @@ public class AddPasswordActivity extends AppCompatActivity {
                                 //if no error in response
                                 if (!obj.getBoolean("error")) {
                                     Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                    Service newService = new Service(serviceName.getText().toString(),
+                                            username.getText().toString(),
+                                            password.getText().toString(),
+                                            note.getText().toString());
 
-                                    Service newService = new Service(serviceName.getText().toString(),username.getText().toString(),password.getText().toString(),note.getText().toString());
                                     Intent intent = new Intent();
                                     Bundle bundle = new Bundle();
                                     bundle.putSerializable("newService", newService);

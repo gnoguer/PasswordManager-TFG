@@ -36,14 +36,13 @@ public class PasswordGenerator {
         String strSpecialChar = generateRandomString(CHAR_SPECIAL, 1);
         result.append(strSpecialChar);
 
-        // the rest are random
+        // rest are random
         String strOther = generateRandomString(PASSWORD_ALLOW, passwordLength - 7);
         result.append(strOther);
 
         return result.toString();
     }
 
-    // generate a random char[], based on `input`
     private String generateRandomString(String input, int size) {
 
         if (input == null || input.length() <= 0)

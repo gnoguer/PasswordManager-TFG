@@ -29,7 +29,6 @@ public class Crypter {
 
     private static Crypter instance;
     private Cipher cipher;
-    byte[] iv;
     Context context;
 
     private Crypter(Context context) throws NoSuchPaddingException, NoSuchAlgorithmException {
@@ -57,9 +56,7 @@ public class Crypter {
         try {
 
             cipher.init(Cipher.ENCRYPT_MODE, originalKey);
-
             byte[] encryptedData = cipher.doFinal(data.getBytes());
-
             base64EncryptedData = Base64.getEncoder().encodeToString(encryptedData);
 
             Log.d("user",base64EncryptedData);

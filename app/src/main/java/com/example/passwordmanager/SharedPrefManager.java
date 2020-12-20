@@ -19,19 +19,19 @@ public class SharedPrefManager {
     private static final String KEY_EMAIL = "keyemail";
     private static final String KEY_ID = "keyid";
     private static final String KEY_SECRET = "keysecret";
-    private static SharedPrefManager mInstance;
-    private static Context mCtx;
+    private static SharedPrefManager instance;
+    private static Context context;
 
 
     private SharedPrefManager(Context context) {
-        mCtx = context;
+        SharedPrefManager.context = context;
     }
 
     public static synchronized SharedPrefManager getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new SharedPrefManager(context);
+        if (instance == null) {
+            instance = new SharedPrefManager(context);
         }
-        return mInstance;
+        return instance;
     }
 
 
@@ -44,7 +44,7 @@ public class SharedPrefManager {
         SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
                 SHARED_PREF_NAME,
                 masterKeyAlias,
-                mCtx,
+                context,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
@@ -58,7 +58,7 @@ public class SharedPrefManager {
 
     //this method will check whether user is already logged in or not
     public boolean isLoggedIn() {
-        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_USERNAME, null) != null;
     }
 
@@ -66,11 +66,11 @@ public class SharedPrefManager {
     public User getUser() throws GeneralSecurityException, IOException {
 
         String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
-        //SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
         SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
                 SHARED_PREF_NAME,
                 masterKeyAlias,
-                mCtx,
+                context,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
@@ -87,7 +87,7 @@ public class SharedPrefManager {
         SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
                 SHARED_PREF_NAME,
                 masterKeyAlias,
-                mCtx,
+                context,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         );
@@ -97,10 +97,10 @@ public class SharedPrefManager {
 
     //this method will logout the user
     public void logout() {
-        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
-        mCtx.startActivity(new Intent(mCtx, LoginActivity.class));
+        context.startActivity(new Intent(context, LoginActivity.class));
     }
 }

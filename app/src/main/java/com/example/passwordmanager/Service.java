@@ -1,6 +1,8 @@
 package com.example.passwordmanager;
 
-public class Service {
+import java.io.Serializable;
+
+public class Service implements Serializable {
 
     private String name;
     private String username;

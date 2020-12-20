@@ -1,11 +1,13 @@
 package com.example.passwordmanager;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
@@ -29,9 +31,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.NoSuchPaddingException;
 
 public class PasswordsVaultActivity extends AppCompatActivity {
 
@@ -59,16 +64,28 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         fab.setOnClickListener(new View.OnClickListener(){
 
             public void onClick(View view){
-                finish();
                 Intent intent = new Intent(PasswordsVaultActivity.this, AddPasswordActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                assert data != null;
+                Service newService = (Service) data.getExtras().getSerializable("newService");
+                services.add(newService);
+                buildRecycleView();
+            }
+        }
     }
 
     public void getItems() throws GeneralSecurityException, IOException {
@@ -94,7 +111,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                             } else {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
                             }
-                        } catch (JSONException e) {
+                        } catch (JSONException | GeneralSecurityException | IOException e) {
                             e.printStackTrace();
                         }
                     }
@@ -115,7 +132,10 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    public void createPasswordsList(JSONArray passwordsArray) throws JSONException {
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void createPasswordsList(JSONArray passwordsArray) throws JSONException, GeneralSecurityException, IOException {
+
         for (int i = 0; i < passwordsArray.length(); i++){
 
             JSONObject passwordJson = passwordsArray.getJSONObject(i);
@@ -125,11 +145,14 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             String password = passwordJson.getString("password");
             String note = passwordJson.getString("note");
 
-            services.add(new Service(name, username, password, note));
+            String decryptedPass = Crypter.getInstance(getApplicationContext()).decrypt(password);
+
+            services.add(new Service(name, username, decryptedPass, note));
         }
     }
 
     public void buildRecycleView(){
+
         recyclerView = findViewById(R.id.passwordsRecyclerView);
         layoutManager = new LinearLayoutManager(getApplicationContext());
         adapter = new PasswordsVaultAdapter(services);
@@ -141,10 +164,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             @Override
             public void onCopyClick(int position) throws GeneralSecurityException, IOException {
                 String password = services.get(position).getPassword();
-
-                String strPassword = Crypter.getInstance(getApplicationContext()).decrypt(password, SharedPrefManager.getInstance(getApplicationContext()).getSecretKey());
-                copyPassword(strPassword);
-
+                copyPassword(password);
             }
         });
     }

@@ -6,9 +6,11 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -28,9 +30,11 @@ public class Crypter {
     private static Crypter instance;
     private Cipher cipher;
     byte[] iv;
+    Context context;
 
     private Crypter(Context context) throws NoSuchPaddingException, NoSuchAlgorithmException {
         cipher = Cipher.getInstance("AES");
+        this.context = context;
     }
 
     public static synchronized Crypter getInstance(Context context) throws NoSuchAlgorithmException, NoSuchPaddingException {
@@ -41,7 +45,9 @@ public class Crypter {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String encrypt(String data, String secretKey){
+    public String encrypt(String data) throws GeneralSecurityException, IOException {
+
+        String secretKey = SharedPrefManager.getInstance(context).getSecretKey();
         String base64EncryptedData = "";
         //Decode de base64 string
         byte[] decodedKey = Base64.getDecoder().decode(secretKey);
@@ -66,8 +72,9 @@ public class Crypter {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public String decrypt(String data, String secretKey){
+    public String decrypt(String data) throws GeneralSecurityException, IOException {
 
+        String secretKey = SharedPrefManager.getInstance(context).getSecretKey();
         String strDecryptedData = "";
         //Decode de base64 string
         byte[] decodedKey = Base64.getDecoder().decode(secretKey);

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
@@ -135,14 +137,12 @@ public class AddPasswordActivity extends AppCompatActivity {
         if(validInputs()){
 
             String strPass = password.getText().toString();
-            Log.d("user", strPass);
 
             User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
-            Log.d("user",user.getSecret());
 
             //Encryption of the password
 
-            String strEncryptedPass = Crypter.getInstance(getApplicationContext()).encrypt(strPass,user.getSecret());
+            String strEncryptedPass = Crypter.getInstance(getApplicationContext()).encrypt(strPass);
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_SAVE_PASSWORD,
                     new Response.Listener<String>() {
@@ -154,8 +154,15 @@ public class AddPasswordActivity extends AppCompatActivity {
                                 //if no error in response
                                 if (!obj.getBoolean("error")) {
                                     Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+
+                                    Service newService = new Service(serviceName.getText().toString(),username.getText().toString(),password.getText().toString(),note.getText().toString());
+                                    Intent intent = new Intent();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable("newService", newService);
+                                    intent.putExtras(bundle);
+                                    setResult(Activity.RESULT_OK, intent);
                                     finish();
-                                    startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
+
                                 } else {
                                     Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
                                 }
@@ -226,8 +233,4 @@ public class AddPasswordActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(), PasswordsVaultActivity.class));
-    }
 }

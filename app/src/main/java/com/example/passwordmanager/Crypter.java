@@ -50,11 +50,9 @@ public class Crypter {
     public String generateKey(String masterPass, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         PBEKeySpec spec = new PBEKeySpec(masterPass.toCharArray(), salt, 1000, 256);
-        SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1").generateSecret(spec);
+        SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2withHmacSHA256").generateSecret(spec);
 
-        String secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
-
-        return secretKeyString;
+        return Base64.getEncoder().encodeToString(secretKey.getEncoded());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -65,7 +63,7 @@ public class Crypter {
         //Decode de base64 string
         byte[] decodedKey = Base64.getDecoder().decode(secretKey);
         //Rebuild the key
-        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2WithHmacSHA1");
+        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2withHmacSHA256");
 
         try {
 
@@ -91,7 +89,7 @@ public class Crypter {
         byte[] decodedKey = Base64.getDecoder().decode(secretKey);
 
         //Rebuild the key
-        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2WithHmacSHA1");
+        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2withHmacSHA256");
         Log.d("key", String.valueOf(originalKey));
 
         try {

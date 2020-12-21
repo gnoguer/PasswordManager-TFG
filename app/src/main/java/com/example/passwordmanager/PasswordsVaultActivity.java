@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -69,6 +70,21 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             public void onClick(View view){
                 Intent intent = new Intent(PasswordsVaultActivity.this, AddPasswordActivity.class);
                 startActivityForResult(intent, 1);
+            }
+        });
+
+        SearchView searchView = findViewById(R.id.servicesSearchView);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
             }
         });
 

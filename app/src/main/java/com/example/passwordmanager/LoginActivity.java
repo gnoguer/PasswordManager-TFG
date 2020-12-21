@@ -106,17 +106,18 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(password, email.getBytes());
+        SharedPrefManager.getInstance(getApplicationContext()).saveUserKey(secretKeyString);
 
         String encryptedPassword = Crypter.getInstance(getApplicationContext()).encrypt(password);
 
-        //if everything is fine
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_LOGIN,
                 new Response.Listener<String>() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onResponse(String response) {
                         try {
-                            //converting response to json object
+
                             JSONObject obj = new JSONObject(response);
 
                             //if no error in response
@@ -125,11 +126,6 @@ public class LoginActivity extends AppCompatActivity {
 
                                 //getting the user from the response
                                 JSONObject userJson = obj.getJSONObject("user");
-
-                                byte[] salt = userJson.getString("email").getBytes();
-                                String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(password, salt);
-
-                                //creating a new user object
                                 User user = new User(
                                         userJson.getInt("id"),
                                         userJson.getString("email"),

@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,10 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAdapter.PasswordsVaultViewHolder> {
+public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAdapter.PasswordsVaultViewHolder> implements Filterable {
 
-    private ArrayList<Service> services;
+    private final ArrayList<Service> services;
+    private final ArrayList<Service> servicesFull;
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
@@ -64,6 +69,7 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
 
     public PasswordsVaultAdapter(ArrayList<Service> services){
         this.services = services;
+        this.servicesFull = new ArrayList<>(services);
     }
 
     @NonNull
@@ -90,6 +96,40 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
         return services.size();
     }
 
+    @Override
+    public Filter getFilter() {
+        return serviceFilter;
+    }
 
+    private Filter serviceFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Service> filteredList = new ArrayList<>();
 
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(servicesFull);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for(Service service : servicesFull){
+                    if(service.getName().toLowerCase().contains(filterPattern)){
+                        filteredList.add(service);
+                    }
+            }
+        }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+    }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            services.clear();
+            services.addAll((List) results.values);
+
+            notifyDataSetChanged();
+
+        }
+    };
 }

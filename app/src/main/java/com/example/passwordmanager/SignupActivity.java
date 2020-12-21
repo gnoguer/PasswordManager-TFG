@@ -83,9 +83,7 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        byte[] salt = email.getBytes();
-
-        String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(masterPass,salt);
+        String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(masterPass,email.getBytes());
         SharedPrefManager.getInstance(getApplicationContext()).saveUserKey(secretKeyString);
 
         String encryptedMasterPass = Crypter.getInstance(getApplicationContext()).encrypt(masterPass);

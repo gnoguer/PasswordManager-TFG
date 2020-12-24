@@ -6,21 +6,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,8 +36,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.security.GeneralSecurityException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +51,8 @@ public class AddPasswordActivity extends AppCompatActivity {
     Button generatePassBtn;
     EditText note;
     TextView passwordStrength;
-
+    Switch expirationSwitch;
+    EditText expirationDays;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +68,12 @@ public class AddPasswordActivity extends AppCompatActivity {
         generatePassBtn = findViewById(R.id.buttonGeneratePassword);
         note = findViewById(R.id.editTextPassNote);
         passwordStrength = findViewById(R.id.passwordStrengthTextView);
+        expirationSwitch = findViewById(R.id.expirationSwitch);
+        expirationDays = findViewById(R.id.setExpirationEditTextNumber);
 
         password.addTextChangedListener(passwordEditorWatcher);
+
+        expirationDays.setEnabled(false);
 
         generatePassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +82,24 @@ public class AddPasswordActivity extends AppCompatActivity {
                 startActivityForResult(intent, LAUNCH_SECOND_ACTIVITY);
             }
         });
+
+        expirationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    expirationDays.setEnabled(true);
+                }else{
+                    expirationDays.setEnabled(false);
+                }
+            }
+
+        });
+
+
+
+
+
+
     }
 
     @Override
@@ -111,32 +136,20 @@ public class AddPasswordActivity extends AppCompatActivity {
             return false;
         }
 
-//        if (TextUtils.isEmpty(strUserName)) {
-//            username.setError("Please enter your username");
-//            username.requestFocus();
-//            return false;
-//        }
-
         if (TextUtils.isEmpty(strPassword)) {
             password.setError("Please enter your password");
             password.requestFocus();
             return false;
         }
 
-//        if (TextUtils.isEmpty(strNote)) {
-//            note.setError("Please enter your password");
-//            note.requestFocus();
-//            return false;
-//        }
-
         return true;
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void savePassword() throws GeneralSecurityException, IOException {
         if(validInputs()){
+
             String strPass = password.getText().toString();
             User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
-            //Encryption of the password
             String strEncryptedPass = Crypter.getInstance(getApplicationContext()).encrypt(strPass);
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_SAVE_PASSWORD,
@@ -187,7 +200,24 @@ public class AddPasswordActivity extends AppCompatActivity {
                 }
             };
             VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+
+            if(expirationSwitch.isChecked()){
+                int days = Integer.parseInt(expirationDays.getText().toString());
+                setExpirationAlarm(days, String.valueOf(serviceName.getText()));
+            }
+
         }
+    }
+
+    private void setExpirationAlarm(int days, String serviceName){
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, days);
+
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        intent.putExtra("serviceName", serviceName);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
     @Override

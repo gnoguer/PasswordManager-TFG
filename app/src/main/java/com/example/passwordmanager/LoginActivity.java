@@ -83,8 +83,6 @@ public class LoginActivity extends AppCompatActivity {
                startActivity(new Intent(getApplicationContext(), SignupActivity.class));
            }
        });
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

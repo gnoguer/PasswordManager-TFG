@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
@@ -65,16 +67,16 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        fab.setOnClickListener(new View.OnClickListener(){
 
+        fab.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
                 Intent intent = new Intent(PasswordsVaultActivity.this, AddPasswordActivity.class);
                 startActivityForResult(intent, 1);
             }
         });
 
-        SearchView searchView = findViewById(R.id.servicesSearchView);
 
+        SearchView searchView = findViewById(R.id.servicesSearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

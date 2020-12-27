@@ -46,13 +46,14 @@ public class Crypter {
         return instance;
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String generateKey(String masterPass, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         PBEKeySpec spec = new PBEKeySpec(masterPass.toCharArray(), salt, 1000, 256);
         SecretKey secretKey = SecretKeyFactory.getInstance("PBKDF2withHmacSHA1").generateSecret(spec);
         String key;
-        key = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+        key = android.util.Base64.encodeToString(secretKey.getEncoded(), android.util.Base64.DEFAULT);
         return key;
     }
 
@@ -62,15 +63,15 @@ public class Crypter {
         String secretKey = SharedPrefManager.getInstance(context).getSecretKey();
         String base64EncryptedData = "";
         //Decode de base64 string
-        byte[] decodedKey = Base64.getDecoder().decode(secretKey);
+        byte[] encodedKey = android.util.Base64.decode(secretKey, android.util.Base64.DEFAULT);
         //Rebuild the key
-        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2withHmacSHA1");
+        SecretKey originalKey = new SecretKeySpec(encodedKey, 0, encodedKey.length, "PBKDF2withHmacSHA1");
 
         try {
 
             cipher.init(Cipher.ENCRYPT_MODE, originalKey);
             byte[] encryptedData = cipher.doFinal(data.getBytes());
-            base64EncryptedData = Base64.getEncoder().encodeToString(encryptedData);
+            base64EncryptedData = android.util.Base64.encodeToString(encryptedData, android.util.Base64.DEFAULT);
 
             Log.d("user",base64EncryptedData);
 
@@ -87,16 +88,16 @@ public class Crypter {
         String secretKey = SharedPrefManager.getInstance(context).getSecretKey();
         String strDecryptedData = "";
         //Decode de base64 string
-        byte[] decodedKey = Base64.getDecoder().decode(secretKey);
+        byte[] encodedKey = android.util.Base64.decode(secretKey, android.util.Base64.DEFAULT);
 
         //Rebuild the key
-        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "PBKDF2withHmacSHA1");
+        SecretKey originalKey = new SecretKeySpec(encodedKey, 0, encodedKey.length, "PBKDF2withHmacSHA1");
         Log.d("key", String.valueOf(originalKey));
 
         try {
             cipher.init(Cipher.DECRYPT_MODE, originalKey);
 
-            byte[] decryptedData = Base64.getDecoder().decode(data);
+            byte[] decryptedData = android.util.Base64.decode(data, android.util.Base64.DEFAULT);
             byte[] utf8 = cipher.doFinal(decryptedData);
 
             strDecryptedData = new String(utf8, StandardCharsets.UTF_8);

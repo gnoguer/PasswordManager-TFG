@@ -184,7 +184,18 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                 String password = services.get(position).getPassword();
                 copyPassword(password);
             }
+
+            @Override
+            public void onPreviewClick(int position) {
+                openDialog(services.get(position));
+            }
         });
+    }
+
+    public void openDialog(Service service){
+        PasswordsDialog passwordsDialog = new PasswordsDialog(service);
+        passwordsDialog.show(getSupportFragmentManager(), "Example dialog");
+
     }
 
     public void copyPassword(String password){

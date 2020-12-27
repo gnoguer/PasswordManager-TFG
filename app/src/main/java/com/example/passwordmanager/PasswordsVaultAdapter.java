@@ -27,6 +27,7 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
 
     public interface OnItemClickListener {
         void onCopyClick(int position) throws GeneralSecurityException, IOException;
+        void onPreviewClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -47,6 +48,18 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
             viewPasswordsImageView = itemView.findViewById(R.id.viewPassImageView);
             copyPasswordImageView = itemView.findViewById(R.id.copyPassImageView3);
             serviceOptionsImageButton = itemView.findViewById(R.id.serviceOptionsImageButton);
+
+            viewPasswordsImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onPreviewClick(position);
+                        }
+                    }
+                }
+            });
 
             copyPasswordImageView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -1,22 +1,22 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.passwordmanager.R;
+import com.example.passwordmanager.core.Service;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAdapter.PasswordsVaultViewHolder> implements Filterable {

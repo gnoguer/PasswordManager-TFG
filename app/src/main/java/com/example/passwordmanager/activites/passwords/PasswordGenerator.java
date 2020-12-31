@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.activites.passwords;
 
 import java.security.SecureRandom;
 

@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.core;
 
 public class Note {
 

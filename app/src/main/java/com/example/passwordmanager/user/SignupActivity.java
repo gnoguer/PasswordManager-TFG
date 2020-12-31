@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.user;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,22 +17,18 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.passwordmanager.core.Crypter;
+import com.example.passwordmanager.R;
+import com.example.passwordmanager.requests.URLs;
+import com.example.passwordmanager.requests.VolleySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 
 public class SignupActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.activites.passwords;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.example.passwordmanager.R;
 
 
 public class PasswordGeneratorActivity extends AppCompatActivity {

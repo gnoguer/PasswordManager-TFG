@@ -15,12 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PasswordManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".PasswordGeneratorActivity" />
-        <activity android:name=".AddPasswordActivity" />
-        <activity android:name=".PasswordsVaultActivity" />
-        <activity android:name=".VaultActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".user.SignupActivity" />
+        <activity android:name=".activites.passwords.PasswordGeneratorActivity" />
+        <activity android:name=".activites.passwords.AddPasswordActivity" />
+        <activity android:name=".activites.passwords.PasswordsVaultActivity" />
+        <activity android:name=".activites.VaultActivity" />
+        <activity android:name=".user.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

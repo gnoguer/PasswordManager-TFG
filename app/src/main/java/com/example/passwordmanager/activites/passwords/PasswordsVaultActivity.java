@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.activites.passwords;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -8,16 +8,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -26,6 +22,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.passwordmanager.adapters.PasswordsVaultAdapter;
+import com.example.passwordmanager.core.Crypter;
+import com.example.passwordmanager.R;
+import com.example.passwordmanager.core.Service;
+import com.example.passwordmanager.user.SharedPrefManager;
+import com.example.passwordmanager.requests.URLs;
+import com.example.passwordmanager.user.User;
+import com.example.passwordmanager.requests.VolleySingleton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
@@ -34,12 +38,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.NoSuchPaddingException;
 
 public class PasswordsVaultActivity extends AppCompatActivity {
 

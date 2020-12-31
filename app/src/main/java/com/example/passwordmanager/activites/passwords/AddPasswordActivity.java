@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.activites.passwords;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -31,6 +31,14 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.passwordmanager.AlarmReceiver;
+import com.example.passwordmanager.core.Crypter;
+import com.example.passwordmanager.R;
+import com.example.passwordmanager.core.Service;
+import com.example.passwordmanager.user.SharedPrefManager;
+import com.example.passwordmanager.requests.URLs;
+import com.example.passwordmanager.user.User;
+import com.example.passwordmanager.requests.VolleySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -144,7 +152,7 @@ public class AddPasswordActivity extends AppCompatActivity {
 
         return true;
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     public void savePassword() throws GeneralSecurityException, IOException {
         if(validInputs()){
 
@@ -193,6 +201,7 @@ public class AddPasswordActivity extends AppCompatActivity {
                     Map<String, String> params = new HashMap<>();
                     params.put("userId", String.valueOf(user.getId()));
                     params.put("name", String.valueOf(serviceName.getText()));
+                    params.put("username", String.valueOf(username.getText()));
                     params.put("password", strEncryptedPass);
                     params.put("note", String.valueOf(note.getText()));
 

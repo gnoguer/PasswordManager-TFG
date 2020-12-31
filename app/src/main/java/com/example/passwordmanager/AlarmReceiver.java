@@ -1,7 +1,6 @@
 package com.example.passwordmanager;
 
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,13 +11,18 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.passwordmanager.core.Crypter;
+import com.example.passwordmanager.activites.passwords.PasswordsVaultActivity;
+import com.example.passwordmanager.requests.URLs;
+import com.example.passwordmanager.requests.VolleySingleton;
+import com.example.passwordmanager.user.SharedPrefManager;
+import com.example.passwordmanager.user.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,11 +30,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.crypto.NoSuchPaddingException;
 
 
 public class AlarmReceiver extends BroadcastReceiver {

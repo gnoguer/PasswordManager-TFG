@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.user;
 
 import javax.crypto.SecretKey;
 

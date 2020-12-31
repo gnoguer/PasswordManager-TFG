@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.activites.passwords;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -10,8 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
+
+import com.example.passwordmanager.R;
+import com.example.passwordmanager.core.Service;
 
 import java.util.Objects;
 
@@ -43,7 +45,7 @@ public class PasswordsDialog extends AppCompatDialogFragment {
         TextView usernameTextView = view.findViewById(R.id.showUsernameTextView);
         TextView passwordTextView = view.findViewById(R.id.showPasswordTextView);
 
-        usernameTextView.setText(service.getPassword());
+        usernameTextView.setText(service.getUsername());
         passwordTextView.setText(service.getPassword());
 
         return builder.create();

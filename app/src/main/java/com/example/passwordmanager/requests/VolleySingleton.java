@@ -1,4 +1,4 @@
-package com.example.passwordmanager;
+package com.example.passwordmanager.requests;
 
 import android.content.Context;
 

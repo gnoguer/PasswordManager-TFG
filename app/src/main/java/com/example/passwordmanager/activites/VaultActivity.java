@@ -18,10 +18,6 @@ public class VaultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vault);
         setTitle("Vault");
-
-        Toolbar toolbar = findViewById(R.id.vaultToolbar);
-        setSupportActionBar(toolbar);
-
         CardView passwordsCardView = findViewById(R.id.passwordsCardView);
 
         passwordsCardView.setOnClickListener(new View.OnClickListener() {

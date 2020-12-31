@@ -70,6 +70,8 @@ public class AddPasswordActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.addToolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         serviceName = findViewById(R.id.editTextServiceName);
         username = findViewById(R.id.editTextUsername);
         password = findViewById(R.id.editTextPassword);

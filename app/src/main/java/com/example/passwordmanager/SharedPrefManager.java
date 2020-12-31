@@ -19,6 +19,7 @@ public class SharedPrefManager {
     private static final String KEY_EMAIL = "keyemail";
     private static final String KEY_ID = "keyid";
     private static final String KEY_SECRET = "keysecret";
+    private static final String CHECK_LEAKS_FLAG = "checkleak";
     private static SharedPrefManager instance;
     private static Context context;
 
@@ -54,7 +55,7 @@ public class SharedPrefManager {
     //method to let the user login
     //this method will store the user data in shared preferences
     public void userLogin(User user) throws GeneralSecurityException, IOException {
-        String masterKeyAlias = masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+        String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
 
         SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
                 SHARED_PREF_NAME,
@@ -68,7 +69,22 @@ public class SharedPrefManager {
         editor.putInt(KEY_ID, user.getId());
         editor.putString(KEY_EMAIL, user.getEmail());
         editor.putString(KEY_SECRET, user.getSecret());
+        editor.putBoolean(CHECK_LEAKS_FLAG, true);
         editor.apply();
+    }
+
+    public boolean getLeakCheckerFlag() throws GeneralSecurityException, IOException {
+        String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+
+        SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
+                SHARED_PREF_NAME,
+                masterKeyAlias,
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
+
+        return sharedPreferences.getBoolean(CHECK_LEAKS_FLAG, false);
     }
 
     //this method will check whether user is already logged in or not

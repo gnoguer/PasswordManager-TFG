@@ -7,5 +7,8 @@ public class URLs {
     public static final String URL_REGISTER = ROOT_URL + "signup";
     public static final String URL_LOGIN = ROOT_URL + "login";
     public static final String URL_SAVE_PASSWORD = ROOT_URL + "savePass";
+    public static final String URL_GET_SERVICES = ROOT_URL + "getServices";
+    public static final String URL_GET_LEAKS = ROOT_URL + "getLeaks";
     public static final String URL_GET_PASSWORDS = ROOT_URL + "getPasswords";
+
 }

@@ -3,6 +3,8 @@ package com.example.passwordmanager;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -117,11 +120,10 @@ public class LoginActivity extends AppCompatActivity {
                         try {
 
                             JSONObject obj = new JSONObject(response);
-
                             //if no error in response
                             if (!obj.getBoolean("error")) {
-                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
 
+                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
                                 //getting the user from the response
                                 JSONObject userJson = obj.getJSONObject("user");
                                 User user = new User(
@@ -129,6 +131,11 @@ public class LoginActivity extends AppCompatActivity {
                                         userJson.getString("email"),
                                         secretKeyString
                                 );
+
+                                if(!SharedPrefManager.getInstance(getApplicationContext()).getLeakCheckerFlag()){
+                                    startLeakCheckerAlarm();
+                                }
+
                                 SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), VaultActivity.class));
@@ -158,5 +165,21 @@ public class LoginActivity extends AppCompatActivity {
 
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
+
+    public void startLeakCheckerAlarm(){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0); // For 1 PM or 2 PM
+        calendar.set(Calendar.MINUTE, 14);
+        calendar.set(Calendar.SECOND, 0);
+
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        intent.putExtra("code",0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
+
 
 }

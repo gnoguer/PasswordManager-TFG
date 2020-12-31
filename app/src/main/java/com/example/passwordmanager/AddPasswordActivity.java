@@ -215,6 +215,7 @@ public class AddPasswordActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         intent.putExtra("serviceName", serviceName);
+        intent.putExtra("code", 1);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);

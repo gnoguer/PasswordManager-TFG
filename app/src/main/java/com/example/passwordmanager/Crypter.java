@@ -47,7 +47,6 @@ public class Crypter {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public String generateKey(String masterPass, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         PBEKeySpec spec = new PBEKeySpec(masterPass.toCharArray(), salt, 1000, 256);
@@ -57,7 +56,6 @@ public class Crypter {
         return key;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public String encrypt(String data) throws GeneralSecurityException, IOException {
 
         String secretKey = SharedPrefManager.getInstance(context).getSecretKey();
@@ -82,7 +80,6 @@ public class Crypter {
         return base64EncryptedData;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public String decrypt(String data) throws GeneralSecurityException, IOException {
 
         String secretKey = SharedPrefManager.getInstance(context).getSecretKey();

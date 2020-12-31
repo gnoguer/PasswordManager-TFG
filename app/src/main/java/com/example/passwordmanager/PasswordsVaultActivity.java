@@ -110,7 +110,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
 
         User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.URL_GET_PASSWORDS + "&userId=" + user.getId(),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.URL_GET_SERVICES + "&userId=" + user.getId(),
                 new Response.Listener<String>() {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override

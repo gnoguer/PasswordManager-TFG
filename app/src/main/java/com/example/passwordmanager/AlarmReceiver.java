@@ -42,7 +42,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-
         int reqCode = intent.getExtras().getInt("code");
 
         if(reqCode == 0){
@@ -85,7 +84,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                             User user = SharedPrefManager.getInstance(context).getUser();
 
-                            StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.URL_GET_PASSWORDS + "&userId=" + user.getId(),
+                            StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.URL_GET_SERVICES + "&userId=" + user.getId(),
                                     new Response.Listener<String>() {
 
                                         @Override
@@ -93,15 +92,15 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                                             try {
                                                 JSONObject obj = new JSONObject(response);
-                                                 JSONArray passwordsArray = obj.getJSONArray("passwords");
+                                                 JSONArray servicesArray = obj.getJSONArray("passwords");
+                                                 for (int i = 0; i< servicesArray.length(); i++){
 
-                                                 for (int i = 0; i< passwordsArray.length(); i++){
-                                                     String decryptedPass = Crypter.getInstance(context).decrypt(passwordsArray.getString(i));
+                                                     JSONObject serviceJson = servicesArray.getJSONObject(i);
+                                                     String decryptedPass = Crypter.getInstance(context).decrypt(serviceJson.getString("password"));
 
                                                      for(int j = 0; j < leaksArray.length(); j++){
-
                                                          if(decryptedPass.equals(leaksArray.get(j))){
-                                                             sendLeakedPasswordNotification(context);
+                                                             sendLeakedPasswordNotification(context, serviceJson.getString("name"));
                                                          }
                                                      }
                                                  }
@@ -132,12 +131,12 @@ public class AlarmReceiver extends BroadcastReceiver {
         VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
     }
 
-    public void sendLeakedPasswordNotification(Context context){
+    public void sendLeakedPasswordNotification(Context context, String name){
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_1_ID)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentTitle("Your password has been leaked")
-                .setContentText("Go and change it")
+                .setContentText("Your password from " + name + " has been leaked")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE);
 

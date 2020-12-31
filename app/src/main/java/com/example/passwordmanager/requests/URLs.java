@@ -10,5 +10,6 @@ public class URLs {
     public static final String URL_GET_SERVICES = ROOT_URL + "getServices";
     public static final String URL_GET_LEAKS = ROOT_URL + "getLeaks";
     public static final String URL_GET_PASSWORDS = ROOT_URL + "getPasswords";
+    public static final String URL_DELETE_SERVICE = ROOT_URL + "deleteService";
 
 }

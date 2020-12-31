@@ -104,12 +104,6 @@ public class AddPasswordActivity extends AppCompatActivity {
             }
 
         });
-
-
-
-
-
-
     }
 
     @Override
@@ -120,7 +114,6 @@ public class AddPasswordActivity extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
@@ -172,7 +165,9 @@ public class AddPasswordActivity extends AppCompatActivity {
                                 //if no error in response
                                 if (!obj.getBoolean("error")) {
                                     Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-                                    Service newService = new Service(serviceName.getText().toString(),
+
+                                    int serviceCode = obj.getInt("code");
+                                    Service newService = new Service(serviceCode, serviceName.getText().toString(),
                                             username.getText().toString(),
                                             password.getText().toString(),
                                             note.getText().toString());

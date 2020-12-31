@@ -1,11 +1,13 @@
 package com.example.passwordmanager.adapters;
 
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +30,7 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
     public interface OnItemClickListener {
         void onCopyClick(int position) throws GeneralSecurityException, IOException;
         void onPreviewClick(int position);
+        void onOptionsClick(int position, View view);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -77,8 +80,22 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
                 }
             });
 
+            serviceOptionsImageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onOptionsClick(position, v);
+                        }
+                    }
+                }
+            });
+
         }
     }
+
+
 
     public PasswordsVaultAdapter(ArrayList<Service> services){
         this.services = services;

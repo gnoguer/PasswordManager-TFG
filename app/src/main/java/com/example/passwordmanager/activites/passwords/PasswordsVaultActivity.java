@@ -13,7 +13,9 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -111,7 +113,6 @@ public class PasswordsVaultActivity extends AppCompatActivity {
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.URL_GET_SERVICES + "&userId=" + user.getId(),
                 new Response.Listener<String>() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onResponse(String response) {
                         try {
@@ -148,15 +149,13 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         };
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     public void createPasswordsList(JSONArray passwordsArray) throws JSONException, GeneralSecurityException, IOException {
 
         for (int i = 0; i < passwordsArray.length(); i++){
 
             JSONObject passwordJson = passwordsArray.getJSONObject(i);
-
+            int code = passwordJson.getInt("code");
             String name = passwordJson.getString("name");
             String username = passwordJson.getString("username");
             String password = passwordJson.getString("password");
@@ -164,7 +163,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
 
             String decryptedPass = Crypter.getInstance(getApplicationContext()).decrypt(password);
 
-            services.add(new Service(name, username, decryptedPass, note));
+            services.add(new Service(code, name, username, decryptedPass, note));
         }
     }
 
@@ -177,7 +176,6 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new PasswordsVaultAdapter.OnItemClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onCopyClick(int position) throws GeneralSecurityException, IOException {
                 String password = services.get(position).getPassword();
@@ -188,7 +186,61 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             public void onPreviewClick(int position) {
                 openDialog(services.get(position));
             }
+
+            @Override
+            public void onOptionsClick(int position, View view) {
+
+                PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
+                popupMenu.inflate(R.menu.password_popup_menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.action_popup_delete) {
+                            int code = services.get(position).getCode();
+                            deleteItem(code, position);
+                        }
+                        return  true;
+                    }
+                });
+
+                popupMenu.show();
+            }
         });
+    }
+
+    public void deleteItem(int code, int position){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_DELETE_SERVICE,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (!obj.getBoolean("error")) {
+                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                services.remove(position);
+                                adapter.notifyItemRemoved(position);
+                            } else {
+                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("code", String.valueOf(code));
+                return params;
+            }
+        };
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     public void openDialog(Service service){

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activites.passwords.PasswordsVaultActivity">
+    tools:context=".activites.notes.NotesVaultActivity">
 
     <SearchView
-        android:id="@+id/servicesSearchView"
+        android:id="@+id/notesSearchView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
@@ -19,7 +19,7 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/passwordsRecyclerView"
+        android:id="@+id/notesRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
@@ -27,10 +27,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/servicesSearchView" />
+        app:layout_constraintTop_toBottomOf="@+id/notesSearchView" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/passwordsFab"
+        android:id="@+id/notesFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
@@ -38,5 +38,8 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_add_24" />
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        android:focusable="true" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

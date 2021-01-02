@@ -7,12 +7,12 @@
     tools:context=".activites.notes.AddNoteActivity">
 
     <include
-        android:id="@+id/addToolbar"
+        android:id="@+id/addNoteToolbar"
         layout="@layout/custom_toolbar">
     </include>
 
     <EditText
-        android:id="@+id/editTextServiceName"
+        android:id="@+id/editTextNoteName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -23,10 +23,10 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addToolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/addNoteToolbar" />
 
     <EditText
-        android:id="@+id/editTextUsername"
+        android:id="@+id/editTextNote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -39,6 +39,6 @@
         android:lines="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextServiceName" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextNoteName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

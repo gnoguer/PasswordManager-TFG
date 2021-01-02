@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PasswordManager"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activites.notes.AddNoteActivity"></activity>
+        <activity
+            android:name=".activites.notes.AddNoteActivity"
+            android:theme="@style/Theme.noActionBar" />
         <activity android:name=".activites.notes.NotesVaultActivity" />
         <activity android:name=".user.SignupActivity" />
         <activity

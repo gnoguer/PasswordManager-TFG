@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.passwordmanager.R;
+import com.example.passwordmanager.activites.notes.NotesVaultActivity;
 import com.example.passwordmanager.activites.passwords.PasswordsVaultActivity;
 
 public class VaultActivity extends AppCompatActivity {
@@ -19,11 +20,20 @@ public class VaultActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vault);
         setTitle("Vault");
         CardView passwordsCardView = findViewById(R.id.passwordsCardView);
+        CardView notesCardView = findViewById(R.id.notesCardView);
 
         passwordsCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(VaultActivity.this, PasswordsVaultActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        notesCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(VaultActivity.this, NotesVaultActivity.class);
                 startActivity(intent);
             }
         });

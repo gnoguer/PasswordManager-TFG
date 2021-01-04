@@ -41,13 +41,11 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/paymentCardsCardView"
-            android:layout_width="168dp"
+            android:layout_width="150dp"
             android:layout_height="212dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="200dp"
-            android:layout_marginRight="200dp"
             android:layout_marginBottom="100dp"
             android:clickable="true"
             android:focusable="true"
@@ -96,13 +94,11 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/notesCardView"
-            android:layout_width="168dp"
+            android:layout_width="150dp"
             android:layout_height="212dp"
             android:layout_marginStart="200dp"
-            android:layout_marginLeft="200dp"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginBottom="350dp"
             android:clickable="true"
             android:focusable="true"
@@ -152,13 +148,11 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/settingsCardView"
-            android:layout_width="168dp"
+            android:layout_width="150dp"
             android:layout_height="212dp"
             android:layout_marginStart="200dp"
-            android:layout_marginLeft="200dp"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="32dp"
             android:layout_marginBottom="100dp"
             android:clickable="true"
             android:focusable="true"
@@ -208,13 +202,11 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/passwordsCardView"
-            android:layout_width="168dp"
+            android:layout_width="150dp"
             android:layout_height="212dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="200dp"
-            android:layout_marginRight="200dp"
             android:layout_marginBottom="350dp"
             android:clickable="true"
             android:focusable="true"

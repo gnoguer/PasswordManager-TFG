@@ -20,14 +20,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.R;
-import com.example.passwordmanager.activites.notes.AddNoteActivity;
-import com.example.passwordmanager.activites.notes.NotesDialog;
-import com.example.passwordmanager.activites.notes.NotesVaultActivity;
-import com.example.passwordmanager.adapters.NotesVaultAdapter;
-import com.example.passwordmanager.adapters.PasswordsVaultAdapter;
 import com.example.passwordmanager.adapters.PaymentCardsVaultAdapter;
 import com.example.passwordmanager.core.Crypter;
-import com.example.passwordmanager.core.Note;
 import com.example.passwordmanager.core.PaymentCard;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
@@ -189,7 +183,7 @@ public class PaymentCardVaultActivity extends AppCompatActivity {
             public void onOptionsClick(int position, View view) {
 
                 PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
-                popupMenu.inflate(R.menu.password_popup_menu);
+                popupMenu.inflate(R.menu.item_popup_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {

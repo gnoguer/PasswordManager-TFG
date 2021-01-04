@@ -22,14 +22,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.R;
-import com.example.passwordmanager.activites.passwords.AddPasswordActivity;
-import com.example.passwordmanager.activites.passwords.PasswordsDialog;
-import com.example.passwordmanager.activites.passwords.PasswordsVaultActivity;
 import com.example.passwordmanager.adapters.NotesVaultAdapter;
 import com.example.passwordmanager.adapters.PasswordsVaultAdapter;
 import com.example.passwordmanager.core.Crypter;
 import com.example.passwordmanager.core.Note;
-import com.example.passwordmanager.core.Service;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
 import com.example.passwordmanager.user.SharedPrefManager;
@@ -190,7 +186,7 @@ public class NotesVaultActivity extends AppCompatActivity {
             public void onOptionsClick(int position, View view) {
 
                 PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
-                popupMenu.inflate(R.menu.password_popup_menu);
+                popupMenu.inflate(R.menu.item_popup_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -256,7 +252,7 @@ public class NotesVaultActivity extends AppCompatActivity {
         myClip = ClipData.newPlainText("text", string);
         myClipboard.setPrimaryClip(myClip);
 
-        Toast.makeText(getApplicationContext(), "Text Copied",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Note Copied",Toast.LENGTH_SHORT).show();
     }
 
 }

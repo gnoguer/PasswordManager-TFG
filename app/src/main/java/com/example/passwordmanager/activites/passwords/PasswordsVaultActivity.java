@@ -1,9 +1,7 @@
 package com.example.passwordmanager.activites.passwords;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,7 +9,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +21,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.passwordmanager.activites.VaultActivity;
 import com.example.passwordmanager.adapters.PasswordsVaultAdapter;
 import com.example.passwordmanager.core.Crypter;
 import com.example.passwordmanager.R;
@@ -45,6 +43,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PasswordsVaultActivity extends AppCompatActivity {
+
+    private static final int START_ADD = 1;
+    private static final int START_EDIT = 2;
 
     private final ArrayList<Service> services = new ArrayList<>();
 
@@ -69,10 +70,10 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         }
 
 
-        fab.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
+        fab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 Intent intent = new Intent(PasswordsVaultActivity.this, AddPasswordActivity.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, START_ADD);
             }
         });
 
@@ -97,12 +98,21 @@ public class PasswordsVaultActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1) {
+        if (requestCode == START_ADD) {
             if (resultCode == Activity.RESULT_OK) {
                 assert data != null;
                 Service newService = (Service) data.getExtras().getSerializable("newService");
                 services.add(newService);
                 buildRecycleView();
+            }
+        }
+        if (requestCode == START_EDIT) {
+            if (resultCode == Activity.RESULT_OK) {
+                assert data != null;
+                Service newService = (Service) data.getExtras().getSerializable("newService");
+                services.add(newService);
+                buildRecycleView();
+
             }
         }
     }
@@ -149,7 +159,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         };
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
-    
+
     public void createPasswordsList(JSONArray passwordsArray) throws JSONException, GeneralSecurityException, IOException {
 
         for (int i = 0; i < passwordsArray.length(); i++){
@@ -191,13 +201,21 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             public void onOptionsClick(int position, View view) {
 
                 PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
-                popupMenu.inflate(R.menu.password_popup_menu);
+                popupMenu.inflate(R.menu.item_popup_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.action_popup_delete) {
                             int code = services.get(position).getCode();
                             deleteItem(code, position);
+                        }
+                        if(item.getItemId() == R.id.action_popup_edit){
+
+                            Intent intent = new Intent();
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("service", services.get(position));
+                            intent.putExtras(bundle);
+                            startActivityForResult(intent, START_EDIT);
                         }
                         return  true;
                     }
@@ -257,6 +275,6 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         myClip = ClipData.newPlainText("text", password);
         myClipboard.setPrimaryClip(myClip);
 
-        Toast.makeText(getApplicationContext(), "Text Copied",Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Password Copied",Toast.LENGTH_SHORT).show();
     }
 }

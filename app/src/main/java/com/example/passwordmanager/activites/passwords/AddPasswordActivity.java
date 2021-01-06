@@ -42,16 +42,26 @@ import com.example.passwordmanager.requests.VolleySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.NoSuchPaddingException;
+
 public class AddPasswordActivity extends AppCompatActivity {
 
-    int LAUNCH_SECOND_ACTIVITY = 1;
+    int ADDING_PASSWORD = 1;
+    int EDITING_PASSWORD = 2;
+    int START_GENERATOR = 3;
+
+    private int requestCode;
+    private int servicePosition;
+    private Service service;
 
     EditText serviceName;
     EditText username;
@@ -61,6 +71,8 @@ public class AddPasswordActivity extends AppCompatActivity {
     TextView passwordStrength;
     Switch expirationSwitch;
     EditText expirationDays;
+    TextView daysTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,16 +92,21 @@ public class AddPasswordActivity extends AppCompatActivity {
         passwordStrength = findViewById(R.id.passwordStrengthTextView);
         expirationSwitch = findViewById(R.id.expirationSwitch);
         expirationDays = findViewById(R.id.setExpirationEditTextNumber);
+        daysTextView = findViewById(R.id.daysTextView);
 
         password.addTextChangedListener(passwordEditorWatcher);
 
         expirationDays.setEnabled(false);
 
+        requestCode = getIntent().getExtras().getInt("requestCode");
+        servicePosition = getIntent().getExtras().getInt("position");
+
         generatePassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent =  new Intent(AddPasswordActivity.this, PasswordGeneratorActivity.class);
-                startActivityForResult(intent, LAUNCH_SECOND_ACTIVITY);
+
+                startActivityForResult(intent, START_GENERATOR);
             }
         });
 
@@ -104,6 +121,17 @@ public class AddPasswordActivity extends AppCompatActivity {
             }
 
         });
+
+        if(requestCode == EDITING_PASSWORD){
+            service = (Service) getIntent().getExtras().get("service");
+            serviceName.setText(service.getName());
+            username.setText(service.getUsername());
+            password.setText(service.getPassword());
+            note.setText(service.getNote());
+            expirationSwitch.setVisibility(View.GONE);
+            expirationDays.setVisibility(View.GONE);
+            daysTextView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -117,13 +145,91 @@ public class AddPasswordActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
-            try {
-                savePassword();
-            } catch (GeneralSecurityException | IOException e) {
-                e.printStackTrace();
+            if(requestCode == ADDING_PASSWORD){
+                try {
+                    savePassword();
+                } catch (GeneralSecurityException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(requestCode == EDITING_PASSWORD){
+                try {
+                    editPassword();
+                } catch (GeneralSecurityException | IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void editPassword() throws GeneralSecurityException, IOException {
+
+        if(validInputs()){
+
+            String strPass = password.getText().toString();
+            User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
+            String strEncryptedPass = Crypter.getInstance(getApplicationContext()).encrypt(strPass);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_UPDATE_SERVICE,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                //converting response to json object
+                                JSONObject obj = new JSONObject(response);
+                                //if no error in response
+                                if (!obj.getBoolean("error")) {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+
+                                    int serviceCode = obj.getInt("code");
+                                    Service newService = new Service(serviceCode, serviceName.getText().toString(),
+                                            username.getText().toString(),
+                                            password.getText().toString(),
+                                            note.getText().toString());
+
+                                    Intent intent = new Intent();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable("newService", newService);
+                                    bundle.putInt("position", servicePosition);
+                                    intent.putExtras(bundle);
+
+                                    setResult(Activity.RESULT_OK, intent);
+                                    finish();
+
+                                } else {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("code", String.valueOf(service.getCode()));
+                    params.put("name", String.valueOf(serviceName.getText()));
+                    params.put("username", String.valueOf(username.getText()));
+                    params.put("password", strEncryptedPass);
+                    params.put("note", String.valueOf(note.getText()));
+
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+
+            if(expirationSwitch.isChecked()){
+                int days = Integer.parseInt(expirationDays.getText().toString());
+                setExpirationAlarm(days, String.valueOf(serviceName.getText()));
+            }
+        }
     }
 
     public boolean validInputs(){
@@ -231,7 +337,7 @@ public class AddPasswordActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+        if (requestCode == START_GENERATOR) {
             if(resultCode == Activity.RESULT_OK){
                 String newGeneratedPass = data.getStringExtra("result");
                 password.setText(newGeneratedPass);

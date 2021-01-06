@@ -73,6 +73,8 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Intent intent = new Intent(PasswordsVaultActivity.this, AddPasswordActivity.class);
+                intent.putExtra("requestCode", START_ADD);
+
                 startActivityForResult(intent, START_ADD);
             }
         });
@@ -110,7 +112,9 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 assert data != null;
                 Service newService = (Service) data.getExtras().getSerializable("newService");
-                services.add(newService);
+                int position = data.getExtras().getInt("position");
+
+                services.set(position, newService);
                 buildRecycleView();
 
             }
@@ -211,16 +215,18 @@ public class PasswordsVaultActivity extends AppCompatActivity {
                         }
                         if(item.getItemId() == R.id.action_popup_edit){
 
-                            Intent intent = new Intent();
+                            Intent intent = new Intent(PasswordsVaultActivity.this, AddPasswordActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("service", services.get(position));
+                            bundle.putInt("requestCode", START_EDIT);
+                            bundle.putInt("position", position);
                             intent.putExtras(bundle);
+
                             startActivityForResult(intent, START_EDIT);
                         }
                         return  true;
                     }
                 });
-
                 popupMenu.show();
             }
         });

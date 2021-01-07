@@ -22,6 +22,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.R;
+import com.example.passwordmanager.activites.passwords.AddPasswordActivity;
+import com.example.passwordmanager.activites.passwords.PasswordsVaultActivity;
 import com.example.passwordmanager.adapters.NotesVaultAdapter;
 import com.example.passwordmanager.adapters.PasswordsVaultAdapter;
 import com.example.passwordmanager.core.Crypter;
@@ -43,6 +45,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NotesVaultActivity extends AppCompatActivity {
+
+    private static final int START_ADD = 1;
+    private static final int START_EDIT = 2;
 
     private final ArrayList<Note> notes = new ArrayList<>();
 
@@ -68,7 +73,9 @@ public class NotesVaultActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
                 Intent intent = new Intent(NotesVaultActivity.this, AddNoteActivity.class);
-                startActivityForResult(intent, 1);
+                intent.putExtra("requestCode", START_ADD);
+
+                startActivityForResult(intent, START_ADD);
             }
 
 
@@ -93,11 +100,22 @@ public class NotesVaultActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1) {
+        if (requestCode == START_ADD) {
             if (resultCode == Activity.RESULT_OK) {
                 assert data != null;
                 Note newNote = (Note) data.getExtras().getSerializable("newNote");
                 notes.add(newNote);
+                buildRecycleView();
+            }
+        }
+
+        if (requestCode == START_EDIT) {
+            if (resultCode == Activity.RESULT_OK) {
+                assert data != null;
+                Note newNote = (Note) data.getExtras().getSerializable("newNote");
+                int position = data.getExtras().getInt("position");
+
+                notes.set(position, newNote);
                 buildRecycleView();
             }
         }
@@ -194,6 +212,18 @@ public class NotesVaultActivity extends AppCompatActivity {
                             int code = notes.get(position).getCode();
                             deleteItem(code, position);
                         }
+                        if(item.getItemId() == R.id.action_popup_edit){
+
+                            Intent intent = new Intent(NotesVaultActivity.this, AddNoteActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("note", notes.get(position));
+                            bundle.putInt("requestCode", START_EDIT);
+                            bundle.putInt("position", position);
+                            intent.putExtras(bundle);
+
+                            startActivityForResult(intent, START_EDIT);
+                        }
+
                         return  true;
                     }
                 });

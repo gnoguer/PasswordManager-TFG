@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,6 +39,13 @@ import java.util.Map;
 
 public class AddNoteActivity extends AppCompatActivity {
 
+    int ADD = 1;
+    int EDIT = 2;
+
+    private int requestCode;
+    private int position;
+    private Note editableNote;
+
     EditText noteName;
     EditText note;
 
@@ -54,6 +62,19 @@ public class AddNoteActivity extends AppCompatActivity {
 
         noteName = findViewById(R.id.editTextNoteName);
         note = findViewById(R.id.editTextNote);
+
+        requestCode = getIntent().getExtras().getInt("requestCode");
+
+
+        if(requestCode == EDIT){
+            position = getIntent().getExtras().getInt("position");
+
+            editableNote = (Note) getIntent().getExtras().get("note");
+
+            noteName.setText(editableNote.getName());
+            note.setText(editableNote.getNote());
+        }
+
     }
 
     @Override
@@ -67,15 +88,82 @@ public class AddNoteActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
-            try {
-                saveNote();
-            } catch (GeneralSecurityException | IOException e) {
-                e.printStackTrace();
+            if (requestCode == ADD) {
+                try {
+                    saveNote();
+                } catch (GeneralSecurityException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (requestCode == EDIT) {
+                try {
+                    editNote();
+                } catch (GeneralSecurityException | IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
         return super.onOptionsItemSelected(item);
     }
 
+    private void editNote() throws GeneralSecurityException, IOException {
+
+        if(validInputs()){
+            String strNote = note.getText().toString();
+
+            String strEncryptedNote = Crypter.getInstance(getApplicationContext()).encrypt(strNote);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_UPDATE_NOTE,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject obj = new JSONObject(response);
+                                if (!obj.getBoolean("error")) {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+
+                                    int noteCode = obj.getInt("code");
+                                    Note newNote = new Note(noteCode, noteName.getText().toString(),
+                                            note.getText().toString());
+
+                                    Intent intent = new Intent();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable("newNote", newNote);
+                                    intent.putExtras(bundle);
+                                    bundle.putInt("position", position);
+
+                                    setResult(Activity.RESULT_OK, intent);
+                                    finish();
+
+                                } else {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("code", String.valueOf(editableNote.getCode()));
+                    params.put("name", String.valueOf(noteName.getText()));
+                    params.put("note", strEncryptedNote);
+
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+        }
+
+    }
     public boolean validInputs(){
 
         final String strNoteName = noteName.getText().toString();

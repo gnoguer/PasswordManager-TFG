@@ -1,7 +1,6 @@
 package com.example.passwordmanager.activites.passwords;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -10,7 +9,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -42,25 +40,21 @@ import com.example.passwordmanager.requests.VolleySingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.NoSuchPaddingException;
-
 public class AddPasswordActivity extends AppCompatActivity {
 
-    int ADDING_PASSWORD = 1;
-    int EDITING_PASSWORD = 2;
+    int ADD = 1;
+    int EDIT = 2;
     int START_GENERATOR = 3;
 
     private int requestCode;
-    private int servicePosition;
+    private int position;
     private Service service;
 
     EditText serviceName;
@@ -99,7 +93,7 @@ public class AddPasswordActivity extends AppCompatActivity {
         expirationDays.setEnabled(false);
 
         requestCode = getIntent().getExtras().getInt("requestCode");
-        servicePosition = getIntent().getExtras().getInt("position");
+
 
         generatePassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,8 +116,10 @@ public class AddPasswordActivity extends AppCompatActivity {
 
         });
 
-        if(requestCode == EDITING_PASSWORD){
+        if(requestCode == EDIT){
+            position = getIntent().getExtras().getInt("position");
             service = (Service) getIntent().getExtras().get("service");
+
             serviceName.setText(service.getName());
             username.setText(service.getUsername());
             password.setText(service.getPassword());
@@ -145,14 +141,14 @@ public class AddPasswordActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.addItem) {
-            if(requestCode == ADDING_PASSWORD){
+            if(requestCode == ADD){
                 try {
                     savePassword();
                 } catch (GeneralSecurityException | IOException e) {
                     e.printStackTrace();
                 }
             }
-            if(requestCode == EDITING_PASSWORD){
+            if(requestCode == EDIT){
                 try {
                     editPassword();
                 } catch (GeneralSecurityException | IOException e) {
@@ -191,7 +187,7 @@ public class AddPasswordActivity extends AppCompatActivity {
                                     Intent intent = new Intent();
                                     Bundle bundle = new Bundle();
                                     bundle.putSerializable("newService", newService);
-                                    bundle.putInt("position", servicePosition);
+                                    bundle.putInt("position", position);
                                     intent.putExtras(bundle);
 
                                     setResult(Activity.RESULT_OK, intent);

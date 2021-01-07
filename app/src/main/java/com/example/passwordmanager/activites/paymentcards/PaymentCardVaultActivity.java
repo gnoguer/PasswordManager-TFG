@@ -20,8 +20,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.R;
+import com.example.passwordmanager.activites.notes.AddNoteActivity;
+import com.example.passwordmanager.activites.notes.NotesVaultActivity;
 import com.example.passwordmanager.adapters.PaymentCardsVaultAdapter;
 import com.example.passwordmanager.core.Crypter;
+import com.example.passwordmanager.core.Note;
 import com.example.passwordmanager.core.PaymentCard;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
@@ -40,6 +43,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PaymentCardVaultActivity extends AppCompatActivity {
+
+    private static final int START_ADD = 1;
+    private static final int START_EDIT = 2;
+
 
     private final ArrayList<PaymentCard> paymentCards = new ArrayList<>();
 
@@ -67,7 +74,9 @@ public class PaymentCardVaultActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
                 Intent intent = new Intent(PaymentCardVaultActivity.this, AddPaymentCardActivity.class);
-                startActivityForResult(intent, 1);
+                intent.putExtra("requestCode", START_ADD);
+
+                startActivityForResult(intent, START_ADD);
             }
 
 
@@ -97,6 +106,17 @@ public class PaymentCardVaultActivity extends AppCompatActivity {
                 assert data != null;
                 PaymentCard newPaymentCard = (PaymentCard) data.getExtras().getSerializable("newPaymentCard");
                 paymentCards.add(newPaymentCard);
+                buildRecycleView();
+            }
+        }
+
+        if (requestCode == START_EDIT) {
+            if (resultCode == Activity.RESULT_OK) {
+                assert data != null;
+                PaymentCard newPaymentCard = (PaymentCard) data.getExtras().getSerializable("newPaymentCard");
+                int position = data.getExtras().getInt("position");
+
+                paymentCards.set(position, newPaymentCard);
                 buildRecycleView();
             }
         }
@@ -191,6 +211,18 @@ public class PaymentCardVaultActivity extends AppCompatActivity {
                             int code = paymentCards.get(position).getCode();
                             deleteItem(code, position);
                         }
+                        if(item.getItemId() == R.id.action_popup_edit){
+
+                            Intent intent = new Intent(PaymentCardVaultActivity.this, AddPaymentCardActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("paymentCard", paymentCards.get(position));
+                            bundle.putInt("requestCode", START_EDIT);
+                            bundle.putInt("position", position);
+                            intent.putExtras(bundle);
+
+                            startActivityForResult(intent, START_EDIT);
+                        }
+
                         return  true;
                     }
                 });

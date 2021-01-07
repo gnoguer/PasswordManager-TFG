@@ -38,6 +38,13 @@ import java.util.Map;
 
 public class AddPaymentCardActivity extends AppCompatActivity {
 
+    int ADD = 1;
+    int EDIT = 2;
+
+    private int requestCode;
+    private int position;
+    private PaymentCard paymentCard;
+
     EditText paymentName;
     EditText nameOnCard;
     EditText number;
@@ -62,6 +69,22 @@ public class AddPaymentCardActivity extends AppCompatActivity {
         securityCode = findViewById(R.id.editTextPaymentSecCode);
         expirationDate = findViewById(R.id.editTextPaymentExpirationDate);
 
+        requestCode = getIntent().getExtras().getInt("requestCode");
+
+        if(requestCode == EDIT){
+
+            position = getIntent().getExtras().getInt("position");
+            paymentCard = (PaymentCard) getIntent().getExtras().get("paymentCard");
+
+            paymentName.setText(paymentCard.getName());
+            nameOnCard.setText(paymentCard.getNameOnCard());
+            number.setText(paymentCard.getNumber());
+            securityCode.setText(paymentCard.getSecurityCode());
+            expirationDate.setText(paymentCard.getExpirationDate());
+
+        }
+
+
     }
 
     @Override
@@ -73,9 +96,16 @@ public class AddPaymentCardActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.addItem) {
+        if (requestCode == ADD) {
             try {
                 savePaymentCard();
+            } catch (GeneralSecurityException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (requestCode == EDIT) {
+            try {
+                editPaymentCard();
             } catch (GeneralSecurityException | IOException e) {
                 e.printStackTrace();
             }
@@ -108,6 +138,74 @@ public class AddPaymentCardActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    public void editPaymentCard() throws GeneralSecurityException, IOException {
+
+        if(validInputs()){
+
+            String strNumber = number.getText().toString();
+            String strSecurityCode = securityCode.getText().toString();
+
+            String strEncryptedNumber = Crypter.getInstance(getApplicationContext()).encrypt(strNumber);
+            String strEncryptedSecurityCode = Crypter.getInstance(getApplicationContext()).encrypt(strSecurityCode);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_UPDATE_PAYMENT_CARD,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+
+                                JSONObject obj = new JSONObject(response);
+                                if (!obj.getBoolean("error")) {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+
+                                    int paymentCardCode = obj.getInt("code");
+                                    PaymentCard newPaymentCard = new PaymentCard(paymentCardCode,
+                                            paymentName.getText().toString(),
+                                            nameOnCard.getText().toString(),
+                                            number.getText().toString(),
+                                            securityCode.getText().toString(),
+                                            expirationDate.getText().toString());
+
+                                    Intent intent = new Intent();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable("newPaymentCard", newPaymentCard);
+                                    bundle.putInt("position", position);
+                                    intent.putExtras(bundle);
+
+                                    setResult(Activity.RESULT_OK, intent);
+                                    finish();
+
+                                } else {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("code", String.valueOf(paymentCard.getCode()));
+                    params.put("name", String.valueOf(paymentName.getText()));
+                    params.put("nameOnCard", String.valueOf(nameOnCard.getText()));
+                    params.put("number", String.valueOf(strEncryptedNumber));
+                    params.put("securityCode", String.valueOf(strEncryptedSecurityCode));
+                    params.put("expirationDate", String.valueOf(expirationDate.getText()));
+
+                    return params;
+                }
+            };
+            VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+        }
     }
 
     public void savePaymentCard() throws GeneralSecurityException, IOException {

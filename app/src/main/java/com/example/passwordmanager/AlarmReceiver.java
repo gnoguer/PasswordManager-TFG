@@ -47,13 +47,24 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             int batteryPct = getBatteryPct(context);
 
-            if(batteryPct > 70){
+            if(batteryPct > 70 || isCharging(context)){
                 checkLeaks(context);
             }
 
         }else if(reqCode == 1){
             sendExpirationNotification(context, intent);
         }
+    }
+
+    public boolean isCharging(Context context){
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = context.registerReceiver(null, ifilter);
+
+        // Are we charging / charged?
+        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+
+        return status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                status == BatteryManager.BATTERY_STATUS_FULL;
     }
 
     public int getBatteryPct(Context context){

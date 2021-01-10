@@ -140,7 +140,7 @@ public class AddPasswordActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.addItem) {
+        if (item.getItemId() == R.id.save) {
             if(requestCode == ADD){
                 try {
                     savePassword();

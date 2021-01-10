@@ -120,10 +120,6 @@ public class LoginActivity extends AppCompatActivity {
                                         secretKeyString
                                 );
 
-                                if(!SharedPrefManager.getInstance(getApplicationContext()).getLeakCheckerFlag()){
-                                    startLeakCheckerAlarm();
-                                }
-
                                 SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
                                 finish();
                                 startActivity(new Intent(getApplicationContext(), VaultActivity.class));
@@ -154,20 +150,7 @@ public class LoginActivity extends AppCompatActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    public void startLeakCheckerAlarm(){
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 15); // For 1 PM or 2 PM
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        intent.putExtra("code",0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
-
-        AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-    }
 
 
 }

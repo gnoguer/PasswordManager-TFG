@@ -15,17 +15,23 @@
         android:theme="@style/Theme.PasswordManager"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".activites.paymentcards.AddPaymentCardActivity"
+            android:name=".activites.LeaksSettingsActivity"
             android:theme="@style/Theme.noActionBar"
-            android:parentActivityName=".activites.paymentcards.PaymentCardVaultActivity"/>
-        <activity android:name=".activites.paymentcards.PaymentCardVaultActivity"
             android:parentActivityName=".activites.VaultActivity"/>
         <activity
+            android:name=".activites.paymentcards.AddPaymentCardActivity"
+            android:parentActivityName=".activites.paymentcards.PaymentCardVaultActivity"
+            android:theme="@style/Theme.noActionBar" />
+        <activity
+            android:name=".activites.paymentcards.PaymentCardVaultActivity"
+            android:parentActivityName=".activites.VaultActivity" />
+        <activity
             android:name=".activites.notes.AddNoteActivity"
-            android:theme="@style/Theme.noActionBar"
-            android:parentActivityName=".activites.notes.NotesVaultActivity"/>
-        <activity android:name=".activites.notes.NotesVaultActivity"
-            android:parentActivityName=".activites.VaultActivity"/>
+            android:parentActivityName=".activites.notes.NotesVaultActivity"
+            android:theme="@style/Theme.noActionBar" />
+        <activity
+            android:name=".activites.notes.NotesVaultActivity"
+            android:parentActivityName=".activites.VaultActivity" />
         <activity android:name=".user.SignupActivity" />
         <activity
             android:name=".activites.passwords.PasswordGeneratorActivity"
@@ -37,7 +43,9 @@
         <activity
             android:name=".activites.passwords.PasswordsVaultActivity"
             android:parentActivityName=".activites.VaultActivity" />
-        <activity android:name=".activites.VaultActivity" />
+        <activity
+            android:name=".activites.VaultActivity"
+            android:theme="@style/Theme.noActionBar" />
         <activity android:name=".user.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -69,7 +69,22 @@ public class SharedPrefManager {
         editor.putInt(KEY_ID, user.getId());
         editor.putString(KEY_EMAIL, user.getEmail());
         editor.putString(KEY_SECRET, user.getSecret());
-        editor.putBoolean(CHECK_LEAKS_FLAG, true);
+        editor.apply();
+    }
+
+    public void setLeakCheckerFlag(boolean flag) throws GeneralSecurityException, IOException {
+        String masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
+
+        SharedPreferences sharedPreferences = EncryptedSharedPreferences.create(
+                SHARED_PREF_NAME,
+                masterKeyAlias,
+                context,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        );
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(CHECK_LEAKS_FLAG, flag);
         editor.apply();
     }
 

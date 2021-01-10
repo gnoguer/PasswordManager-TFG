@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,7 +22,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.R;
 import com.example.passwordmanager.core.Crypter;
 import com.example.passwordmanager.core.Note;
-import com.example.passwordmanager.core.Service;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
 import com.example.passwordmanager.user.SharedPrefManager;
@@ -87,7 +85,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.addItem) {
+        if (item.getItemId() == R.id.save) {
             if (requestCode == ADD) {
                 try {
                     saveNote();

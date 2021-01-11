@@ -15,9 +15,16 @@
         android:theme="@style/Theme.PasswordManager"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".activites.LeaksSettingsActivity"
+            android:name=".activites.bankaccounts.AddBankAccActivity"
             android:theme="@style/Theme.noActionBar"
+            android:parentActivityName=".activites.bankaccounts.BankAccsVaultActivity" />
+
+        <activity android:name=".activites.bankaccounts.BankAccsVaultActivity"
             android:parentActivityName=".activites.VaultActivity"/>
+        <activity
+            android:name=".activites.LeaksSettingsActivity"
+            android:parentActivityName=".activites.VaultActivity"
+            android:theme="@style/Theme.noActionBar" />
         <activity
             android:name=".activites.paymentcards.AddPaymentCardActivity"
             android:parentActivityName=".activites.paymentcards.PaymentCardVaultActivity"

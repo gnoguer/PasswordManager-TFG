@@ -20,11 +20,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.R;
-import com.example.passwordmanager.activites.notes.AddNoteActivity;
-import com.example.passwordmanager.activites.notes.NotesVaultActivity;
 import com.example.passwordmanager.adapters.PaymentCardsVaultAdapter;
 import com.example.passwordmanager.core.Crypter;
-import com.example.passwordmanager.core.Note;
 import com.example.passwordmanager.core.PaymentCard;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
@@ -58,12 +55,12 @@ public class PaymentCardVaultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_payment_card_vault);
+        setContentView(R.layout.activity_item_vault);
 
         setTitle("Payment Cards Vault");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = findViewById(R.id.paymentFab);
+        FloatingActionButton fab = findViewById(R.id.vaultFab);
 
         try {
             getItems();
@@ -82,7 +79,7 @@ public class PaymentCardVaultActivity extends AppCompatActivity {
 
         });
 
-        SearchView searchView = findViewById(R.id.paymentSearchView);
+        SearchView searchView = findViewById(R.id.vaultSearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -186,7 +183,7 @@ public class PaymentCardVaultActivity extends AppCompatActivity {
 
     public void buildRecycleView(){
 
-        recyclerView = findViewById(R.id.paymentRecyclerView);
+        recyclerView = findViewById(R.id.vaultRecyclerView);
         layoutManager = new LinearLayoutManager(getApplicationContext());
         adapter = new PaymentCardsVaultAdapter(paymentCards);
         recyclerView.setLayoutManager(layoutManager);

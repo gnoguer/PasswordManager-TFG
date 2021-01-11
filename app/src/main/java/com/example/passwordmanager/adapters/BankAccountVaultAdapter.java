@@ -12,15 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.passwordmanager.R;
-import com.example.passwordmanager.core.PaymentCard;
+import com.example.passwordmanager.core.BankAccount;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentCardsVaultAdapter extends RecyclerView.Adapter<PaymentCardsVaultAdapter.PaymentCardsVaultViewHolder> implements Filterable {
+public class BankAccountVaultAdapter extends RecyclerView.Adapter<BankAccountVaultAdapter.BankAccountVaultViewHolder> implements Filterable {
 
-    private final ArrayList<PaymentCard> paymentCards;
-    private final ArrayList<PaymentCard> paymentCardsFull;
+    private final ArrayList<BankAccount> bankAccounts;
+    private final ArrayList<BankAccount> bankAccountsFull;
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
@@ -32,18 +32,18 @@ public class PaymentCardsVaultAdapter extends RecyclerView.Adapter<PaymentCardsV
         this.listener = listener;
     }
 
-    public static class PaymentCardsVaultViewHolder extends  RecyclerView.ViewHolder{
+    public static class BankAccountVaultViewHolder extends  RecyclerView.ViewHolder{
 
         public TextView nameTextView;
         public ImageButton viewImageView;
         public ImageButton optionsImageView;
 
 
-        public PaymentCardsVaultViewHolder(@NonNull View itemView, OnItemClickListener listener) {
+        public BankAccountVaultViewHolder(@NonNull View itemView, OnItemClickListener listener) {
             super(itemView);
-            nameTextView = itemView.findViewById(R.id.paymentCardNameTextView);
-            viewImageView = itemView.findViewById(R.id.viewPaymentCardImageView);
-            optionsImageView = itemView.findViewById(R.id.paymentCardOptionsImageView);
+            nameTextView = itemView.findViewById(R.id.bankAccNameTextView);
+            viewImageView = itemView.findViewById(R.id.viewBankAccImageView);
+            optionsImageView = itemView.findViewById(R.id.bankAccOptionsImageView);
 
             viewImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -72,30 +72,31 @@ public class PaymentCardsVaultAdapter extends RecyclerView.Adapter<PaymentCardsV
         }
     }
 
-    public PaymentCardsVaultAdapter(ArrayList<PaymentCard> paymentCards){
-        this.paymentCards = paymentCards;
-        this.paymentCardsFull = new ArrayList<>(paymentCards);
+    public BankAccountVaultAdapter(ArrayList<BankAccount> bankAccounts){
+        this.bankAccounts = bankAccounts;
+        this.bankAccountsFull = new ArrayList<>(bankAccounts);
     }
 
 
     @NonNull
     @Override
-    public PaymentCardsVaultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.payment_cards_list_element, parent, false);
-        return new PaymentCardsVaultViewHolder(view, listener);
+    public BankAccountVaultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bank_account_list_element, parent, false);
+        return new BankAccountVaultViewHolder(view, listener);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull PaymentCardsVaultViewHolder holder, int position) {
-        PaymentCard currentPaymentCard = paymentCards.get(position);
 
-        holder.nameTextView.setText(currentPaymentCard.getName());
+    @Override
+    public void onBindViewHolder(@NonNull BankAccountVaultViewHolder holder, int position) {
+        BankAccount currentBankAccount = bankAccounts.get(position);
+
+        holder.nameTextView.setText(currentBankAccount.getName());
     }
 
     @Override
     public int getItemCount() {
 
-        return paymentCards.size();
+        return bankAccounts.size();
     }
 
     @Override
@@ -106,16 +107,16 @@ public class PaymentCardsVaultAdapter extends RecyclerView.Adapter<PaymentCardsV
     private Filter filter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<PaymentCard> filteredList = new ArrayList<>();
+            List<BankAccount> filteredList = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(paymentCardsFull);
+                filteredList.addAll(bankAccountsFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for(PaymentCard paymentCard : paymentCardsFull){
-                    if(paymentCard.getName().toLowerCase().contains(filterPattern)){
-                        filteredList.add(paymentCard);
+                for(BankAccount bankAccount : bankAccountsFull){
+                    if(bankAccount.getName().toLowerCase().contains(filterPattern)){
+                        filteredList.add(bankAccount);
                     }
                 }
             }
@@ -127,8 +128,8 @@ public class PaymentCardsVaultAdapter extends RecyclerView.Adapter<PaymentCardsV
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            paymentCards.clear();
-            paymentCards.addAll((List) results.values);
+            bankAccounts.clear();
+            bankAccounts.addAll((List) results.values);
 
             notifyDataSetChanged();
 

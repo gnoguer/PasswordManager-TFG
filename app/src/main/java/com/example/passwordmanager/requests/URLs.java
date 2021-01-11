@@ -23,4 +23,9 @@ public class URLs {
     public static final String URL_GET_PAYMENT_CARDS = ROOT_URL + "getPaymentCards";
     public static final String URL_DELETE_PAYMENT_CARD = ROOT_URL + "deletePaymentCard";
     public static final String URL_UPDATE_PAYMENT_CARD = ROOT_URL + "updatePaymentCard";
+
+    public static final String URL_SAVE_BANK_ACC = ROOT_URL + "saveBankAcc";
+    public static final String URL_GET_BANK_ACCS = ROOT_URL + "getBankAccs";
+    public static final String URL_DELETE_BANK_ACC = ROOT_URL + "deleteBankAcc";
+    public static final String URL_UPDATE_BANK_ACC = ROOT_URL + "updateBankAcc";
 }

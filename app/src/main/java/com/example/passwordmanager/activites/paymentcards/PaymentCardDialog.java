@@ -3,7 +3,6 @@ package com.example.passwordmanager.activites.paymentcards;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import android.app.Dialog;

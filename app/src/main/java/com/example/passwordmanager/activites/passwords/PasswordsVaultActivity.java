@@ -21,7 +21,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.passwordmanager.activites.VaultActivity;
 import com.example.passwordmanager.adapters.PasswordsVaultAdapter;
 import com.example.passwordmanager.core.Crypter;
 import com.example.passwordmanager.R;
@@ -57,11 +56,11 @@ public class PasswordsVaultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_passwords_vault);
+        setContentView(R.layout.activity_item_vault);
         setTitle("Passwords Vault");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = findViewById(R.id.passwordsFab);
+        FloatingActionButton fab = findViewById(R.id.vaultFab);
 
         try {
             getItems();
@@ -80,7 +79,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
         });
 
 
-        SearchView searchView = findViewById(R.id.servicesSearchView);
+        SearchView searchView = findViewById(R.id.vaultSearchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -183,7 +182,7 @@ public class PasswordsVaultActivity extends AppCompatActivity {
 
     public void buildRecycleView(){
 
-        recyclerView = findViewById(R.id.passwordsRecyclerView);
+        recyclerView = findViewById(R.id.vaultRecyclerView);
         layoutManager = new LinearLayoutManager(getApplicationContext());
         adapter = new PasswordsVaultAdapter(services);
         recyclerView.setLayoutManager(layoutManager);

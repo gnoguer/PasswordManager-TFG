@@ -1,4 +1,4 @@
-package com.example.passwordmanager.activites.notes;
+package com.example.passwordmanager.activites.bankaccounts;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -22,10 +20,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.R;
-import com.example.passwordmanager.adapters.NotesVaultAdapter;
-import com.example.passwordmanager.adapters.PasswordsVaultAdapter;
+import com.example.passwordmanager.activites.paymentcards.AddPaymentCardActivity;
+import com.example.passwordmanager.activites.paymentcards.PaymentCardDialog;
+import com.example.passwordmanager.activites.paymentcards.PaymentCardVaultActivity;
+import com.example.passwordmanager.adapters.BankAccountVaultAdapter;
+import com.example.passwordmanager.adapters.PaymentCardsVaultAdapter;
+import com.example.passwordmanager.core.BankAccount;
 import com.example.passwordmanager.core.Crypter;
-import com.example.passwordmanager.core.Note;
+import com.example.passwordmanager.core.PaymentCard;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
 import com.example.passwordmanager.user.SharedPrefManager;
@@ -42,22 +44,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NotesVaultActivity extends AppCompatActivity {
+public class BankAccsVaultActivity extends AppCompatActivity {
 
     private static final int START_ADD = 1;
     private static final int START_EDIT = 2;
 
-    private final ArrayList<Note> notes = new ArrayList<>();
+
+    private final ArrayList<BankAccount> bankAccs = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private NotesVaultAdapter adapter;
+    private BankAccountVaultAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_vault);
-        setTitle("Notes Vault");
+
+        setTitle("Bank Accounts Vault");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         FloatingActionButton fab = findViewById(R.id.vaultFab);
@@ -70,12 +75,11 @@ public class NotesVaultActivity extends AppCompatActivity {
 
         fab.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
-                Intent intent = new Intent(NotesVaultActivity.this, AddNoteActivity.class);
+                Intent intent = new Intent(BankAccsVaultActivity.this, AddBankAccActivity.class);
                 intent.putExtra("requestCode", START_ADD);
 
                 startActivityForResult(intent, START_ADD);
             }
-
 
         });
 
@@ -98,11 +102,11 @@ public class NotesVaultActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == START_ADD) {
+        if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 assert data != null;
-                Note newNote = (Note) data.getExtras().getSerializable("newNote");
-                notes.add(newNote);
+                BankAccount newBankAccount = (BankAccount) data.getExtras().getSerializable("newBankAccount");
+                bankAccs.add(newBankAccount);
                 buildRecycleView();
             }
         }
@@ -110,10 +114,10 @@ public class NotesVaultActivity extends AppCompatActivity {
         if (requestCode == START_EDIT) {
             if (resultCode == Activity.RESULT_OK) {
                 assert data != null;
-                Note newNote = (Note) data.getExtras().getSerializable("newNote");
+                BankAccount newBankAccount = (BankAccount) data.getExtras().getSerializable("newBankAccount");
                 int position = data.getExtras().getInt("position");
 
-                notes.set(position, newNote);
+                bankAccs.set(position, newBankAccount);
                 buildRecycleView();
             }
         }
@@ -123,7 +127,7 @@ public class NotesVaultActivity extends AppCompatActivity {
 
         User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.URL_GET_NOTES + "&userId=" + user.getId(),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URLs.URL_GET_BANK_ACCS + "&userId=" + user.getId(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -134,8 +138,8 @@ public class NotesVaultActivity extends AppCompatActivity {
                             if (!obj.getBoolean("error")) {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
 
-                                JSONArray notesArray = obj.getJSONArray("notes");
-                                createItemList(notesArray);
+                                JSONArray array = obj.getJSONArray("bankAccounts");
+                                createItemList(array);
                                 buildRecycleView();
 
                             } else {
@@ -167,14 +171,15 @@ public class NotesVaultActivity extends AppCompatActivity {
 
         for (int i = 0; i < itemArray.length(); i++){
 
-            JSONObject passwordJson = itemArray.getJSONObject(i);
-            int code = passwordJson.getInt("code");
-            String name = passwordJson.getString("name");
-            String note = passwordJson.getString("note");
+            JSONObject json = itemArray.getJSONObject(i);
+            int code = json.getInt("code");
+            String name = json.getString("name");
+            String IBAN = json.getString("IBAN");
+            String PIN = json.getString("PIN");
 
-            String decryptedNote = Crypter.getInstance(getApplicationContext()).decrypt(note);
-
-            notes.add(new Note(code, name, decryptedNote));
+            String decryptedIBAN = Crypter.getInstance(getApplicationContext()).decrypt(IBAN);
+            String decryptedPIN = Crypter.getInstance(getApplicationContext()).decrypt(PIN);
+            bankAccs.add(new BankAccount(code, name, decryptedIBAN, decryptedPIN));
         }
     }
 
@@ -182,20 +187,15 @@ public class NotesVaultActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.vaultRecyclerView);
         layoutManager = new LinearLayoutManager(getApplicationContext());
-        adapter = new NotesVaultAdapter(notes);
+        adapter = new BankAccountVaultAdapter(bankAccs);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnItemClickListener(new PasswordsVaultAdapter.OnItemClickListener() {
-            @Override
-            public void onCopyClick(int position) throws GeneralSecurityException, IOException {
-                String note = notes.get(position).getNote();
-                clipboardCopy(note);
-            }
+        adapter.setOnItemClickListener(new BankAccountVaultAdapter.OnItemClickListener() {
 
             @Override
             public void onPreviewClick(int position) {
-                openDialog(notes.get(position));
+                openDialog(bankAccs.get(position));
             }
 
             @Override
@@ -207,14 +207,14 @@ public class NotesVaultActivity extends AppCompatActivity {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.action_popup_delete) {
-                            int code = notes.get(position).getCode();
+                            int code = bankAccs.get(position).getCode();
                             deleteItem(code, position);
                         }
                         if(item.getItemId() == R.id.action_popup_edit){
 
-                            Intent intent = new Intent(NotesVaultActivity.this, AddNoteActivity.class);
+                            Intent intent = new Intent(BankAccsVaultActivity.this, AddBankAccActivity.class);
                             Bundle bundle = new Bundle();
-                            bundle.putSerializable("note", notes.get(position));
+                            bundle.putSerializable("bankAccount", bankAccs.get(position));
                             bundle.putInt("requestCode", START_EDIT);
                             bundle.putInt("position", position);
                             intent.putExtras(bundle);
@@ -232,7 +232,7 @@ public class NotesVaultActivity extends AppCompatActivity {
     }
 
     public void deleteItem(int code, int position){
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_DELETE_NOTE,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_DELETE_BANK_ACC,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -240,7 +240,7 @@ public class NotesVaultActivity extends AppCompatActivity {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-                                notes.remove(position);
+                                bankAccs.remove(position);
                                 adapter.notifyItemRemoved(position);
                             } else {
                                 Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
@@ -266,21 +266,10 @@ public class NotesVaultActivity extends AppCompatActivity {
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    public void openDialog(Note note){
-        NotesDialog notesDialog = new NotesDialog(note);
-        notesDialog.show(getSupportFragmentManager(), "Example dialog");
+    public void openDialog(BankAccount bankAccount){
+        BankAccDialog dialog = new BankAccDialog(bankAccount);
+        dialog.show(getSupportFragmentManager(), "dialog");
 
-    }
-
-    public void clipboardCopy(String string){
-        ClipboardManager myClipboard;
-        ClipData myClip;
-
-        myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        myClip = ClipData.newPlainText("text", string);
-        myClipboard.setPrimaryClip(myClip);
-
-        Toast.makeText(getApplicationContext(), "Note Copied",Toast.LENGTH_SHORT).show();
     }
 
 }

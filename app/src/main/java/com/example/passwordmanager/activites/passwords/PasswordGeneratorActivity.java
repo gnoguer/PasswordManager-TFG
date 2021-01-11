@@ -1,10 +1,12 @@
 package com.example.passwordmanager.activites.passwords;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -20,6 +22,16 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
 
     private int passLength = 8;
     private String newGeneratedPass;
+    
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +39,7 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_password_generator);
         setTitle("Password Generator");
 
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Button generateBtn = findViewById(R.id.generateButton);
         TextView generatedPass = findViewById(R.id.generatedPassTextView);
@@ -64,6 +76,8 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
             }
         });
 
+
+
         generateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +96,7 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("result",newGeneratedPass);
+                returnIntent.putExtra("result", newGeneratedPass);
                 setResult(Activity.RESULT_OK,returnIntent);
                 finish();
             }

@@ -22,7 +22,7 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
 
     private int passLength = 8;
     private String newGeneratedPass;
-    
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 

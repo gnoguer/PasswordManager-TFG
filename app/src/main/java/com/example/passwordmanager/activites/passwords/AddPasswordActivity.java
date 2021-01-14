@@ -220,11 +220,6 @@ public class AddPasswordActivity extends AppCompatActivity {
                 }
             };
             VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
-
-            if(expirationSwitch.isChecked()){
-                int days = Integer.parseInt(expirationDays.getText().toString());
-                setExpirationAlarm(days, String.valueOf(serviceName.getText()));
-            }
         }
     }
 
@@ -274,6 +269,11 @@ public class AddPasswordActivity extends AppCompatActivity {
                                             password.getText().toString(),
                                             note.getText().toString());
 
+                                    if(expirationSwitch.isChecked()){
+                                        int days = Integer.parseInt(expirationDays.getText().toString());
+                                        setExpirationAlarm(days, newService);
+                                    }
+
                                     Intent intent = new Intent();
                                     Bundle bundle = new Bundle();
                                     bundle.putSerializable("newService", newService);
@@ -309,21 +309,17 @@ public class AddPasswordActivity extends AppCompatActivity {
             };
             VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
 
-            if(expirationSwitch.isChecked()){
-                int days = Integer.parseInt(expirationDays.getText().toString());
-                setExpirationAlarm(days, String.valueOf(serviceName.getText()));
-            }
-
         }
     }
 
-    private void setExpirationAlarm(int days, String serviceName){
+    private void setExpirationAlarm(int days, Service service){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, days);
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        intent.putExtra("serviceName", serviceName);
+        intent.putExtra("serviceName", service);
         intent.putExtra("code", 1);
+        intent.putExtra("notificationId", service.getCode());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);

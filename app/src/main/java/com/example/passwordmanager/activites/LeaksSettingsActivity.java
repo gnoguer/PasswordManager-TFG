@@ -110,7 +110,7 @@ public class LeaksSettingsActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         intent.putExtra("code",0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
@@ -123,7 +123,7 @@ public class LeaksSettingsActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         intent.putExtra("code",0);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
 
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);

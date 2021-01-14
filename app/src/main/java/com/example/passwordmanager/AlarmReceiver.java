@@ -19,6 +19,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.passwordmanager.core.Crypter;
 import com.example.passwordmanager.activites.passwords.PasswordsVaultActivity;
+import com.example.passwordmanager.core.Service;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
 import com.example.passwordmanager.user.SharedPrefManager;
@@ -52,7 +53,8 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
 
         }else if(reqCode == 1){
-            sendExpirationNotification(context, intent);
+            int id = intent.getExtras().getInt("notificationId");
+            sendExpirationNotification(context, intent, id);
         }
     }
 
@@ -110,7 +112,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                                                      for(int j = 0; j < leaksArray.length(); j++){
                                                          if(decryptedPass.equals(leaksArray.get(j))){
-                                                             sendLeakedPasswordNotification(context, serviceJson.getString("name"));
+                                                             sendLeakedPasswordNotification(context, serviceJson.getString("name"), serviceJson.getInt("code"));
                                                          }
                                                      }
                                                  }
@@ -141,7 +143,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
     }
 
-    public void sendLeakedPasswordNotification(Context context, String name){
+    public void sendLeakedPasswordNotification(Context context, String name, int id){
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_1_ID)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
@@ -158,16 +160,16 @@ public class AlarmReceiver extends BroadcastReceiver {
         {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_1_ID,
-                    "Channel 1",
+                    "Channel",
                     NotificationManager.IMPORTANCE_HIGH);
             mNotificationManager.createNotificationChannel(channel);
             builder.setChannelId(CHANNEL_1_ID);
         }
 
-        mNotificationManager.notify(1, builder.build());
+        mNotificationManager.notify(id, builder.build());
     }
 
-    public void sendExpirationNotification(Context context, Intent intent){
+    public void sendExpirationNotification(Context context, Intent intent, int id){
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 new Intent(context, PasswordsVaultActivity.class), 0);
@@ -189,7 +191,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_1_ID,
-                    "Channel 1",
+                    "Channel",
                     NotificationManager.IMPORTANCE_HIGH);
             mNotificationManager.createNotificationChannel(channel);
             builder.setChannelId(CHANNEL_1_ID);

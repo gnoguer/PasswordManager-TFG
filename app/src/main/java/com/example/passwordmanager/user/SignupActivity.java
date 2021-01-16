@@ -60,71 +60,87 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
+    public boolean validInputs(){
 
+        String email = editTextSignupEmail.getText().toString().trim();
+        String masterPass = editTextSignupPassword.getText().toString().trim();
+        String confirmMasterPass = editTextConfirmPassword.getText().toString().trim();
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextSignupEmail.setError("Enter a valid email");
+            editTextSignupEmail.requestFocus();
+            return false;
+        }
+
+        if (TextUtils.isEmpty(masterPass)) {
+            editTextSignupPassword.setError("Enter a password");
+            editTextSignupPassword.requestFocus();
+            return false;
+        }
+        if(TextUtils.isEmpty(confirmMasterPass)){
+            editTextConfirmPassword.setError("Confirm your password");
+            editTextConfirmPassword.requestFocus();
+            return false;
+        }
+        if(!confirmMasterPass.equals(masterPass)){
+            editTextConfirmPassword.setError("Confirmation password is not the same");
+            editTextConfirmPassword.requestFocus();
+            return false;
+        }
+        return true;
+    }
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void register() throws GeneralSecurityException, IOException {
 
         String email = editTextSignupEmail.getText().toString().trim();
         String masterPass = editTextSignupPassword.getText().toString().trim();
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editTextSignupEmail.setError("Enter a valid email");
-            editTextSignupEmail.requestFocus();
-            return;
-        }
+        if(validInputs()){
+            String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(masterPass,email.getBytes());
+            SharedPrefManager.getInstance(getApplicationContext()).saveUserKey(secretKeyString);
 
-        if (TextUtils.isEmpty(masterPass)) {
-            editTextSignupPassword.setError("Enter a password");
-            editTextSignupPassword.requestFocus();
-            return;
-        }
+            String encryptedMasterPass = Crypter.getInstance(getApplicationContext()).encrypt(masterPass);
 
-        String secretKeyString = Crypter.getInstance(getApplicationContext()).generateKey(masterPass,email.getBytes());
-        SharedPrefManager.getInstance(getApplicationContext()).saveUserKey(secretKeyString);
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_REGISTER,
+                    new Response.Listener<String>() {
+                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                //converting response to json object
+                                JSONObject obj = new JSONObject(response);
 
-        String encryptedMasterPass = Crypter.getInstance(getApplicationContext()).encrypt(masterPass);
+                                //if no error in response
+                                if (!obj.getBoolean("error")) {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_REGISTER,
-                new Response.Listener<String>() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            //converting response to json object
-                            JSONObject obj = new JSONObject(response);
+                                    finish();
+                                    startActivity(new Intent(getApplicationContext(), LoginActivity.class));
 
-                            //if no error in response
-                            if (!obj.getBoolean("error")) {
-                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-
-                                finish();
-                                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-
-                            } else {
-                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("email", email);
-                params.put("password", encryptedMasterPass);
-                return params;
-            }
-        };
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("email", email);
+                    params.put("password", encryptedMasterPass);
+                    return params;
+                }
+            };
 
-        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
-
-
+            VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+        }
     }
 }

@@ -43,7 +43,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -251,6 +254,20 @@ public class AddPasswordActivity extends AppCompatActivity {
             String strPass = password.getText().toString();
             User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
             String strEncryptedPass = Crypter.getInstance(getApplicationContext()).encrypt(strPass);
+            String strDate = "";
+
+            if(expirationSwitch.isChecked()){
+
+                int days = Integer.parseInt(expirationDays.getText().toString());
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, days);
+
+                Date date = calendar.getTime();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                strDate = dateFormat.format(date);
+            }
+
+            String finalStrDate = strDate;
 
             StringRequest stringRequest = new StringRequest(Request.Method.POST, URLs.URL_SAVE_PASSWORD,
                     new Response.Listener<String>() {
@@ -303,6 +320,7 @@ public class AddPasswordActivity extends AppCompatActivity {
                     params.put("username", String.valueOf(username.getText()));
                     params.put("password", strEncryptedPass);
                     params.put("note", String.valueOf(note.getText()));
+                    params.put("expirationDate", finalStrDate);
 
                     return params;
                 }

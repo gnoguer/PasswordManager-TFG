@@ -315,9 +315,11 @@ public class AddPasswordActivity extends AppCompatActivity {
     private void setExpirationAlarm(int days, Service service){
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, days);
+//        calendar.set(Calendar.HOUR_OF_DAY, 15);
+//        calendar.set(Calendar.MINUTE, 0);
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        intent.putExtra("serviceName", service);
+        intent.putExtra("serviceName", service.getName());
         intent.putExtra("code", 1);
         intent.putExtra("notificationId", service.getCode());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);

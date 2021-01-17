@@ -118,7 +118,7 @@ public class LeaksSettingsActivity extends AppCompatActivity {
     public void startLeakCheckerAlarm(int hour, int minute){
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour); // For 1 PM or 2 PM
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);

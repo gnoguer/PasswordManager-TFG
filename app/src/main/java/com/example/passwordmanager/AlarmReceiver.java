@@ -197,6 +197,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             builder.setChannelId(CHANNEL_1_ID);
         }
 
-        mNotificationManager.notify(1, builder.build());
+        mNotificationManager.notify(id, builder.build());
     }
 }

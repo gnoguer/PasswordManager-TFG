@@ -106,6 +106,7 @@ public class LeaksSettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     public void cancelPreviousAlarm(){
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);

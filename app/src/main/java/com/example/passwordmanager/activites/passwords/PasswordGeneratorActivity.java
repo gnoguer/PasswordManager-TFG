@@ -51,6 +51,10 @@ public class PasswordGeneratorActivity extends AppCompatActivity {
         Switch lowerCaseSwitch = findViewById(R.id.azSwitch);
         Switch digitsSwitch = findViewById(R.id.digitsSwitch);
         Switch specialSwitch = findViewById(R.id.specialSwitch);
+        upperCaseSwitch.setChecked(true);
+        lowerCaseSwitch.setChecked(true);
+        digitsSwitch.setChecked(true);
+        specialSwitch.setChecked(true);
 
 
         PasswordGenerator generator = new PasswordGenerator();

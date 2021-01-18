@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -43,6 +44,7 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
         public ImageButton viewPasswordsImageView;
         public ImageButton copyPasswordImageView;
         public ImageButton serviceOptionsImageButton;
+        public ImageView expiredImageView;
 
 
         public PasswordsVaultViewHolder(@NonNull View itemView, OnItemClickListener listener) {
@@ -51,6 +53,7 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
             viewPasswordsImageView = itemView.findViewById(R.id.viewPassImageView);
             copyPasswordImageView = itemView.findViewById(R.id.copyPassImageView3);
             serviceOptionsImageButton = itemView.findViewById(R.id.serviceOptionsImageButton);
+            expiredImageView = itemView.findViewById(R.id.expiredImageView);
 
             viewPasswordsImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -114,10 +117,9 @@ public class PasswordsVaultAdapter extends RecyclerView.Adapter<PasswordsVaultAd
         Service currentService = services.get(position);
 
         holder.serviceNameTextView.setText(currentService.getName());
-        holder.viewPasswordsImageView.setImageResource(R.drawable.ic_baseline_remove_red_eye_24);
-        holder.copyPasswordImageView.setImageResource(R.drawable.ic_baseline_content_copy_24);
-        holder.serviceOptionsImageButton.setImageResource(R.drawable.ic_baseline_more_vert_24);
-
+        if(currentService.isExpired()){
+            holder.expiredImageView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

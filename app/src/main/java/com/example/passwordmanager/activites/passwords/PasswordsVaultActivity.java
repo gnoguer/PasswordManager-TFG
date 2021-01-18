@@ -10,6 +10,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -173,10 +174,11 @@ public class PasswordsVaultActivity extends AppCompatActivity {
             String username = passwordJson.getString("username");
             String password = passwordJson.getString("password");
             String note = passwordJson.getString("note");
+            String expirationDate = passwordJson.getString("expirationDate");
 
             String decryptedPass = Crypter.getInstance(getApplicationContext()).decrypt(password);
 
-            services.add(new Service(code, name, username, decryptedPass, note));
+            services.add(new Service(code, name, username, decryptedPass, note, expirationDate));
         }
     }
 
@@ -205,6 +207,11 @@ public class PasswordsVaultActivity extends AppCompatActivity {
 
                 PopupMenu popupMenu = new PopupMenu(getApplicationContext(), view);
                 popupMenu.inflate(R.menu.item_popup_menu);
+
+                if(services.get(position).isExpired()){
+                    Menu menu = popupMenu.getMenu();
+                    menu.removeItem(R.id.action_popup_edit);
+                }
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {

@@ -1,6 +1,11 @@
 package com.example.passwordmanager.core;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Service implements Serializable {
 
@@ -11,6 +16,16 @@ public class Service implements Serializable {
     private String username;
     private String password;
     private String note;
+    private String expirationDate;
+
+    public Service(int code, String name, String username, String password, String note, String expirationDate){
+        this.code = code;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.note = note;
+        this.expirationDate = expirationDate;
+    }
 
     public Service(int code, String name, String username, String password, String note){
         this.code = code;
@@ -20,11 +35,21 @@ public class Service implements Serializable {
         this.note = note;
     }
 
-    public Service(String name, String username, String password, String note){
-        this.name = name;
-        this.username = username;
-        this.password = password;
-        this.note = note;
+    public boolean isExpired() {
+
+        if(!expirationDate.isEmpty()){
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            Date expiration = null;
+            try {
+                expiration = format.parse(expirationDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return expiration.compareTo(new Date()) < 0;
+        }
+        return false;
+
     }
 
     public String getName() {

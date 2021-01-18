@@ -77,6 +77,12 @@ public class SignupActivity extends AppCompatActivity {
             editTextSignupPassword.requestFocus();
             return false;
         }
+        if(!isValid(masterPass)){
+            editTextSignupPassword.setError("Enter a valid master password");
+            editTextSignupPassword.requestFocus();
+            return false;
+        }
+
         if(TextUtils.isEmpty(confirmMasterPass)){
             editTextConfirmPassword.setError("Confirm your password");
             editTextConfirmPassword.requestFocus();
@@ -89,6 +95,35 @@ public class SignupActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    public static boolean isValid(String password)
+    {
+        if (password == null || password.length() < 8)
+        {
+            return false;
+        }
+        boolean containUpper = false;
+        boolean containDigit = false;
+        int i = 0;
+        while (i < password.length())
+        {
+            if (containDigit && containUpper)
+            {
+                break;
+            }
+            if (Character.isUpperCase(password.charAt(i)))
+            {
+                containUpper = true;
+            }
+            if (Character.isDigit(password.charAt(i)))
+            {
+                containDigit = true;
+            }
+            i++;
+        }
+        return containDigit & containUpper;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     protected void register() throws GeneralSecurityException, IOException {
 

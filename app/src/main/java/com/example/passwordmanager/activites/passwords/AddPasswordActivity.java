@@ -263,7 +263,7 @@ public class AddPasswordActivity extends AppCompatActivity {
                 calendar.add(Calendar.DATE, days);
 
                 Date date = calendar.getTime();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 strDate = dateFormat.format(date);
             }
 
@@ -284,7 +284,8 @@ public class AddPasswordActivity extends AppCompatActivity {
                                     Service newService = new Service(serviceCode, serviceName.getText().toString(),
                                             username.getText().toString(),
                                             password.getText().toString(),
-                                            note.getText().toString());
+                                            note.getText().toString(),
+                                            finalStrDate);
 
                                     if(expirationSwitch.isChecked()){
                                         int days = Integer.parseInt(expirationDays.getText().toString());

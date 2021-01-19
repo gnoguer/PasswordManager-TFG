@@ -37,8 +37,8 @@ public class Service implements Serializable {
 
     public boolean isExpired() {
 
-        if(!expirationDate.isEmpty()){
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        if(!expirationDate.isEmpty() && (expirationDate != null)){
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date expiration = null;
             try {
                 expiration = format.parse(expirationDate);

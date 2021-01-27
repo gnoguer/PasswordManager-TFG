@@ -16,7 +16,7 @@ public class Service implements Serializable {
     private String username;
     private String password;
     private String note;
-    private String expirationDate;
+    private final String expirationDate;
 
     public Service(int code, String name, String username, String password, String note, String expirationDate){
         this.code = code;
@@ -33,11 +33,12 @@ public class Service implements Serializable {
         this.username = username;
         this.password = password;
         this.note = note;
+        this.expirationDate = "";
     }
 
     public boolean isExpired() {
 
-        if(!expirationDate.isEmpty() && (expirationDate != null)){
+        if(!expirationDate.isEmpty()){
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date expiration = null;
             try {

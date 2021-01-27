@@ -332,16 +332,19 @@ public class AddPasswordActivity extends AppCompatActivity {
     }
 
     private void setExpirationAlarm(int days, Service service){
+
+        Date currentDate = new Date();
+
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, days);
-//        calendar.set(Calendar.HOUR_OF_DAY, 15);
-//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.setTime(currentDate);
+        calendar.add(Calendar.DATE, 1);
+
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         intent.putExtra("serviceName", service.getName());
         intent.putExtra("code", 1);
         intent.putExtra("notificationId", service.getCode());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 1, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), service.getCode(), intent, 0);
         AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
@@ -361,7 +364,7 @@ public class AddPasswordActivity extends AppCompatActivity {
     private final TextWatcher passwordEditorWatcher = new TextWatcher() {
 
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            passwordStrength.setText("Not Entered");
+
         }
 
         public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -369,22 +372,65 @@ public class AddPasswordActivity extends AppCompatActivity {
         }
 
         public void afterTextChanged(Editable s) {
-            if (s.length() == 0)
-                passwordStrength.setText("Not Entered");
-            else if (s.length() < 6){
+
+            if (calculateStrength(s.toString()) <= 1){
                 passwordStrength.setText("EASY");
-                passwordStrength.setTextColor(Color.rgb(255,165,0));
+                passwordStrength.setTextColor(Color.parseColor("#61ad85"));
             }
-            else if (s.length() < 10){
+            else if (calculateStrength(s.toString()) == 2){
                 passwordStrength.setText("MEDIUM");
-                passwordStrength.setTextColor(Color.YELLOW);
+                passwordStrength.setTextColor(Color.parseColor("#4d8a6a"));
             }
-            else{
+            else if(calculateStrength(s.toString()) == 3){
                 passwordStrength.setText("STRONG");
-                passwordStrength.setTextColor(Color.GREEN);
+                passwordStrength.setTextColor(Color.parseColor("#3a674f"));
+            }
+            else if(calculateStrength(s.toString()) == 4){
+                passwordStrength.setText("VERY STRONG");
+                passwordStrength.setTextColor(Color.parseColor("#264535"));
             }
 
         }
     };
+
+    public int calculateStrength(String password){
+        int score = 0;
+        boolean upper = false;
+        boolean lower = false;
+        boolean digit = false;
+        boolean specialChar = false;
+
+        for (int i = 0; i < password.length(); i++) {
+            char c = password.charAt(i);
+            if (!specialChar  &&  !Character.isLetterOrDigit(c)) {
+                score++;
+                specialChar = true;
+            } else {
+                if (!digit  &&  Character.isDigit(c)) {
+                    score++;
+                    digit = true;
+                } else {
+                    if (!upper || !lower) {
+                        if (Character.isUpperCase(c)) {
+                            upper = true;
+                        } else {
+                            lower = true;
+                        }
+
+                        if (upper && lower) {
+                            score++;
+                        }
+                    }
+                }
+            }
+        }
+        int length = password.length();
+
+        if (length >= 8) {
+            score++;
+        }
+
+        return score;
+    }
 
 }

@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.os.BatteryManager;
 import android.os.Build;
 
@@ -22,6 +23,7 @@ import com.example.passwordmanager.activites.passwords.PasswordsVaultActivity;
 import com.example.passwordmanager.core.Service;
 import com.example.passwordmanager.requests.URLs;
 import com.example.passwordmanager.requests.VolleySingleton;
+import com.example.passwordmanager.user.LoginActivity;
 import com.example.passwordmanager.user.SharedPrefManager;
 import com.example.passwordmanager.user.User;
 
@@ -43,16 +45,12 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         int reqCode = intent.getExtras().getInt("code");
-
-        if(reqCode == 0){
-
+        if(reqCode == 0){ //Checking for leaks
             int batteryPct = getBatteryPct(context);
-
             if(batteryPct > 70 || isCharging(context)){
                 checkLeaks(context);
             }
-
-        }else if(reqCode == 1){
+        }else if(reqCode == 1){ //Passwords expiration
             int id = intent.getExtras().getInt("notificationId");
             sendExpirationNotification(context, intent, id);
         }
@@ -146,7 +144,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void sendLeakedPasswordNotification(Context context, String name, int id){
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_1_ID)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher_lock_round))
                 .setContentTitle("Your password has been leaked")
                 .setContentText("Your password from " + name + " has been leaked")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -172,12 +171,13 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void sendExpirationNotification(Context context, Intent intent, int id){
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-                new Intent(context, PasswordsVaultActivity.class), 0);
+                new Intent(context, LoginActivity.class), 0);
 
         String serviceName = intent.getExtras().getString("serviceName");
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_1_ID)
-                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher_lock_round))
                 .setContentTitle("Your password " + serviceName + " has expired")
                 .setContentText("Go and change it")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

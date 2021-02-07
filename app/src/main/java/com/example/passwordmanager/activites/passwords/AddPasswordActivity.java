@@ -337,7 +337,7 @@ public class AddPasswordActivity extends AppCompatActivity {
 
         Calendar calendar = Calendar.getInstance();
 //        calendar.setTime(currentDate);
-        calendar.add(Calendar.DATE, 1);
+        calendar.add(Calendar.DATE, days);
 
 
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
